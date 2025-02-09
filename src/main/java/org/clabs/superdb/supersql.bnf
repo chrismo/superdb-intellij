@@ -1,0 +1,20 @@
+{
+  parserClass="org.clabs.superdb.parser.SuperSQLParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="SuperSQL"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.clabs.superdb.psi"
+  psiImplPackage="org.clabs.superdb.psi.impl"
+
+  elementTypeHolderClass="org.clabs.superdb.psi.SuperSQLTypes"
+  elementTypeClass="org.clabs.superdb.psi.SuperSQLElementType"
+  tokenTypeClass="org.clabs.superdb.psi.SuperSQLTokenType"
+}
+
+superSqlFile ::= item_*
+
+private item_ ::= (property|COMMENT|CRLF)
+
+property ::= (KEY? SEPARATOR VALUE?) | KEY
