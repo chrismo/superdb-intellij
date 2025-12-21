@@ -31,7 +31,8 @@ import java.util.Set;
 public class SuperSQLLanguageServerFactory implements LanguageServerFactory {
 
     private static final Logger LOG = Logger.getInstance(SuperSQLLanguageServerFactory.class);
-    private static final String LSP_BINARY_NAME = "super-lsp";
+    private static final String LSP_BINARY_NAME = "superdb-lsp";
+    private static final String LSP_BINARY_NAME_ALT = "super-lsp";
     private static final String LSP_PATH_PROPERTY = "supersql.lsp.path";
 
     @Override
@@ -76,9 +77,28 @@ public class SuperSQLLanguageServerFactory implements LanguageServerFactory {
             LOG.warn("Failed to extract bundled LSP binary", e);
         }
 
-        // 3. Fall back to system PATH
-        LOG.info("Using system PATH for LSP binary: " + LSP_BINARY_NAME);
-        return LSP_BINARY_NAME;
+        // 3. Fall back to system PATH (try both binary names)
+        // First check if superdb-lsp exists in PATH
+        if (isInPath(LSP_BINARY_NAME)) {
+            LOG.info("Using system PATH for LSP binary: " + LSP_BINARY_NAME);
+            return LSP_BINARY_NAME;
+        }
+        // Fall back to super-lsp for backwards compatibility
+        LOG.info("Using system PATH for LSP binary: " + LSP_BINARY_NAME_ALT);
+        return LSP_BINARY_NAME_ALT;
+    }
+
+    /**
+     * Check if a command exists in the system PATH.
+     */
+    private boolean isInPath(String command) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("which", command);
+            Process p = pb.start();
+            return p.waitFor() == 0;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -156,6 +176,6 @@ public class SuperSQLLanguageServerFactory implements LanguageServerFactory {
         }
 
         String suffix = SystemInfo.isWindows ? ".exe" : "";
-        return "/lsp/super-lsp-" + os + "-" + arch + suffix;
+        return "/lsp/superdb-lsp-" + os + "-" + arch + suffix;
     }
 }

@@ -45,5 +45,6 @@ bin/
 src/main/gen/
 
 ### LSP binaries (downloaded at build time) ###
+src/main/resources/lsp/superdb-lsp*
 src/main/resources/lsp/super-lsp*
 src/main/resources/lsp/VERSION
