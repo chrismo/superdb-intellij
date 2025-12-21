@@ -1,0 +1,5 @@
+-- Join with USING clause
+SELECT a.*, b.value
+FROM table_a a
+JOIN table_b b USING (id, name)
+LEFT JOIN table_c c USING (category)

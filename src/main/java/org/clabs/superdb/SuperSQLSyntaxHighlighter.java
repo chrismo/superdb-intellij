@@ -106,6 +106,7 @@ public class SuperSQLSyntaxHighlighter extends SyntaxHighlighterBase {
             tokenType.equals(SuperSQLTypes.AS) ||
             tokenType.equals(SuperSQLTypes.ON) ||
             tokenType.equals(SuperSQLTypes.JOIN) ||
+            tokenType.equals(SuperSQLTypes.USING) ||
             tokenType.equals(SuperSQLTypes.LEFT) ||
             tokenType.equals(SuperSQLTypes.RIGHT) ||
             tokenType.equals(SuperSQLTypes.INNER) ||
@@ -114,6 +115,10 @@ public class SuperSQLSyntaxHighlighter extends SyntaxHighlighterBase {
             tokenType.equals(SuperSQLTypes.CROSS) ||
             tokenType.equals(SuperSQLTypes.ANTI) ||
             tokenType.equals(SuperSQLTypes.WITH) ||
+            tokenType.equals(SuperSQLTypes.RECURSIVE) ||
+            tokenType.equals(SuperSQLTypes.MATERIALIZED) ||
+            tokenType.equals(SuperSQLTypes.ORDINALITY) ||
+            tokenType.equals(SuperSQLTypes.VALUE) ||
             tokenType.equals(SuperSQLTypes.VALUES) ||
             tokenType.equals(SuperSQLTypes.CASE) ||
             tokenType.equals(SuperSQLTypes.WHEN) ||
