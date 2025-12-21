@@ -77,8 +77,8 @@ jobs:
       - name: Generate Lexer and Parser
         run: ./gradlew generateLexer generateParser
 
-      - name: Verify Plugin Structure
-        run: ./gradlew verifyPlugin
+      - name: Build and Verify Plugin Structure
+        run: ./gradlew buildPlugin verifyPlugin
 
       - name: Run Plugin Verifier
         run: ./gradlew runPluginVerifier
