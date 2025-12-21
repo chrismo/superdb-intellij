@@ -39,8 +39,9 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
 
-    <!-- LSP4IJ dependency - optional to allow plugin to work without LSP -->
+    <!-- LSP4IJ dependency - temporarily disabled for build debugging
     <depends optional="true" config-file="supersql-lsp.xml">com.redhat.devtools.lsp4ij</depends>
+    -->
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
