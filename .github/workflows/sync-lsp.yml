@@ -1,0 +1,99 @@
+name: Sync LSP Binary
+
+on:
+  # Trigger when superdb-syntaxes has a new release
+  repository_dispatch:
+    types: [lsp-release]
+
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      lsp_version:
+        description: 'LSP version to sync (tag or "latest")'
+        required: false
+        default: 'latest'
+      create_pr:
+        description: 'Create a PR with updated LSP'
+        required: false
+        default: 'true'
+        type: boolean
+
+  # Schedule to check for new LSP releases weekly
+  schedule:
+    - cron: '0 0 * * 0'  # Every Sunday at midnight
+
+env:
+  LSP_REPO: chrismo/superdb-syntaxes
+
+jobs:
+  sync-lsp:
+    name: Sync LSP Binary
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get current bundled version
+        id: current
+        run: |
+          if [ -f src/main/resources/lsp/VERSION ]; then
+            echo "version=$(cat src/main/resources/lsp/VERSION)" >> $GITHUB_OUTPUT
+          else
+            echo "version=none" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download latest LSP binaries
+        id: download
+        env:
+          GITHUB_TOKEN: ${{ secrets.LSP_REPO_TOKEN }}
+          LSP_REPO: ${{ env.LSP_REPO }}
+        run: |
+          VERSION="${{ github.event.inputs.lsp_version || github.event.client_payload.version || 'latest' }}"
+          ./scripts/download-all-platforms.sh "$VERSION"
+          NEW_VERSION=$(cat src/main/resources/lsp/VERSION)
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ "${{ steps.current.outputs.version }}" = "${{ steps.download.outputs.version }}" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.changed == 'true' && (github.event.inputs.create_pr == 'true' || github.event_name != 'workflow_dispatch')
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update LSP binary to ${{ steps.download.outputs.version }}"
+          title: "Update LSP binary to ${{ steps.download.outputs.version }}"
+          body: |
+            This PR updates the bundled SuperSQL LSP binary.
+
+            **Previous version:** ${{ steps.current.outputs.version }}
+            **New version:** ${{ steps.download.outputs.version }}
+
+            Source: https://github.com/${{ env.LSP_REPO }}/releases/tag/${{ steps.download.outputs.version }}
+          branch: update-lsp-${{ steps.download.outputs.version }}
+          delete-branch: true
+          labels: |
+            dependencies
+            lsp
+
+      - name: Direct commit (workflow_dispatch without PR)
+        if: steps.changes.outputs.changed == 'true' && github.event.inputs.create_pr == 'false'
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add src/main/resources/lsp/
+          git commit -m "Update LSP binary to ${{ steps.download.outputs.version }}"
+          git push

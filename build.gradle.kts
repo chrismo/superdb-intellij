@@ -73,11 +73,19 @@ val ideVersion: String by project.extra {
     findProperty("ideVersion")?.toString() ?: "2024.1.7"
 }
 
+// LSP4IJ version - check for latest at https://plugins.jetbrains.com/plugin/23257-lsp4ij
+val lsp4ijVersion: String by project.extra {
+    findProperty("lsp4ijVersion")?.toString() ?: "0.8.1"
+}
+
 intellij {
     version.set(ideVersion)
     type.set("IC") // Target IDE Platform
 
-    plugins.set(listOf(/* Plugin Dependencies */))
+    // LSP4IJ for Language Server Protocol support
+    plugins.set(listOf(
+        "com.redhat.devtools.lsp4ij:$lsp4ijVersion"
+    ))
 }
 
 tasks {
@@ -125,3 +133,41 @@ tasks.test {
     // Ensure tests run after code generation
     dependsOn(generateLexer, generateParser)
 }
+
+// LSP Configuration
+val lspRepo: String by project.extra {
+    findProperty("lspRepo")?.toString() ?: "chrismo/superdb-syntaxes"
+}
+val lspVersion: String by project.extra {
+    findProperty("lspVersion")?.toString() ?: "latest"
+}
+
+// Task to download LSP binary for current platform
+tasks.register<Exec>("downloadLsp") {
+    group = "lsp"
+    description = "Download SuperSQL LSP binary for current platform"
+
+    workingDir = projectDir
+    commandLine("bash", "scripts/download-lsp.sh", lspVersion)
+
+    environment("LSP_REPO", lspRepo)
+    environment("GITHUB_TOKEN", System.getenv("GITHUB_TOKEN") ?: "")
+}
+
+// Task to download LSP binaries for all platforms (for distribution)
+tasks.register<Exec>("downloadLspAll") {
+    group = "lsp"
+    description = "Download SuperSQL LSP binaries for all platforms"
+
+    workingDir = projectDir
+    commandLine("bash", "scripts/download-all-platforms.sh", lspVersion)
+
+    environment("LSP_REPO", lspRepo)
+    environment("GITHUB_TOKEN", System.getenv("GITHUB_TOKEN") ?: "")
+}
+
+// Make buildPlugin depend on LSP download for distribution builds
+// Uncomment when LSP releases are available:
+// tasks.buildPlugin {
+//     dependsOn("downloadLspAll")
+// }

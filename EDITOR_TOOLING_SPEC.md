@@ -126,9 +126,9 @@ vscode/
 
 **Purpose**: Full SuperSQL support in IntelliJ-based IDEs.
 
-**Current state**: Native Grammar-Kit implementation (this repo).
+**Current state**: Hybrid implementation with native Grammar-Kit + LSP4IJ integration.
 
-**Future state**: Hybrid approach:
+**Architecture**:
 - **Native layer** (fast, always available):
   - Syntax highlighting via JFlex lexer
   - Brace matching
@@ -144,6 +144,26 @@ vscode/
 - Native highlighting is faster (no process startup)
 - LSP provides semantic features that are hard to replicate
 - Graceful degradation if LSP unavailable
+
+**LSP Integration**:
+The plugin automatically fetches LSP binaries from `chrismo/superdb-syntaxes` releases.
+
+```
+src/main/java/org/clabs/superdb/lsp/
+├── SuperSQLLanguageServerFactory.java  # LSP connection provider
+├── SuperSQLLspServerSupportProvider.java  # Enablement logic
+└── SuperSQLLspSettings.java  # User configuration
+```
+
+**LSP Binary Resolution** (in order):
+1. System property `supersql.lsp.path`
+2. Bundled binary in plugin resources
+3. `super-lsp` in system PATH
+
+**Automation**:
+- `./gradlew downloadLsp` - Download LSP for current platform
+- `./gradlew downloadLspAll` - Download LSP for all platforms
+- GitHub Actions: `sync-lsp.yml` - Auto-update when new LSP releases
 
 **Publishing**: JetBrains Marketplace
 

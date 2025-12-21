@@ -40,3 +40,10 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Generated sources ###
+src/main/gen/
+
+### LSP binaries (downloaded at build time) ###
+src/main/resources/lsp/super-lsp*
+src/main/resources/lsp/VERSION
