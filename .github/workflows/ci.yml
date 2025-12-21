@@ -35,7 +35,7 @@ jobs:
         run: ./gradlew generateLexer generateParser
 
       - name: Build Plugin
-        run: ./gradlew buildPlugin
+        run: ./gradlew buildPlugin --info --stacktrace 2>&1 | tee build.log || (cat build.log && exit 1)
 
       - name: Run Tests
         run: ./gradlew test
