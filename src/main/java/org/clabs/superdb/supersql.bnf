@@ -338,7 +338,7 @@ from_source ::= REGEX | glob_pattern | text_ref | IDENTIFIER
 
 glob_pattern ::= STAR | IDENTIFIER (DOT IDENTIFIER)* STAR?
 
-text_ref ::= SINGLE_QUOTED_STRING | DOUBLE_QUOTED_STRING | fstring
+text_ref ::= SINGLE_QUOTED_STRING | DOUBLE_QUOTED_STRING | fstring_literal
 
 join_clause ::= join_type? JOIN table_primary join_condition?
 
@@ -605,7 +605,7 @@ lambda_expr ::= LAMBDA identifier_list? COLON expr {pin=1}
 
 // === Literals ===
 literal ::= string_literal
-          | fstring
+          | fstring_literal
           | number_literal
           | boolean_literal
           | null_literal
@@ -618,7 +618,7 @@ literal ::= string_literal
 
 string_literal ::= DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING | RAW_STRING
 
-fstring ::= FSTRING
+fstring_literal ::= FSTRING
 
 number_literal ::= FLOAT_LIT | INT_LIT | HEX_LIT | NAN_LIT | INF_LIT
 
@@ -694,17 +694,19 @@ private postgres_type ::= BIGINT | BOOLEAN | BYTEA | CHAR | CIDR
 
 error_type ::= ERROR LPAREN type_expr RPAREN {pin=1}
 
-enum_type ::= ENUM LPAREN name_list RPAREN {pin=1}
+enum_type ::= ENUM LPAREN simple_name_list RPAREN {pin=1}
 
-name_list ::= name (COMMA name)*
+simple_name_list ::= simple_name (COMMA simple_name)*
 
-name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
+simple_name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
 
 record_type ::= LBRACE type_field_list? RBRACE
 
 type_field_list ::= type_field (COMMA type_field)*
 
-type_field ::= name COLON type_expr {pin=2}
+type_field ::= type_field_name COLON type_expr {pin=2}
+
+type_field_name ::= simple_name
 
 array_type ::= LBRACKET type_expr RBRACKET {pin=1}
 
