@@ -69,8 +69,12 @@ tasks.compileKotlin {
 
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
+val ideVersion: String by project.extra {
+    findProperty("ideVersion")?.toString() ?: "2024.1.7"
+}
+
 intellij {
-    version.set("2024.1.7")
+    version.set(ideVersion)
     type.set("IC") // Target IDE Platform
 
     plugins.set(listOf(/* Plugin Dependencies */))
@@ -99,6 +103,10 @@ tasks {
 
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
+    }
+
+    runPluginVerifier {
+        ideVersions.set(listOf("2024.1", "2024.2", "2024.3"))
     }
 }
 
