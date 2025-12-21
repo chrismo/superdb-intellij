@@ -1,34 +1,87 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-	<!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-	<id>org.clabs.superdb</id>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>org.clabs.superdb</id>
 
-	<!-- Public plugin name should be written in Title Case.
-		 Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-	<name>SuperDB</name>
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>SuperDB</name>
 
-	<!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-	<vendor email="chrismo@clabs.org" url="https://clabs.org">cLabs</vendor>
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="chrismo@clabs.org" url="https://clabs.org">cLabs</vendor>
 
-	<!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
-		 Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
-		 Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-	<description><![CDATA[
-    SuperDB SuperSQL Query Language, and ZSON Data Format
-  ]]></description>
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
+    <p>SuperDB language support for IntelliJ-based IDEs.</p>
 
-	<!-- Product and plugin compatibility requirements.
-		 Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
-	<depends>com.intellij.modules.platform</depends>
+    <h3>Features</h3>
+    <ul>
+        <li><strong>SuperSQL Query Language</strong> - Full syntax highlighting for .spq files</li>
+        <li><strong>SQL Compatibility</strong> - Standard SQL keywords and clauses</li>
+        <li><strong>Pipe Operators</strong> - fork, switch, sort, top, head, tail, and more</li>
+        <li><strong>Rich Types</strong> - int64, float64, string, duration, time, ip, net, etc.</li>
+        <li><strong>Code Folding</strong> - Collapse blocks, comments, and expressions</li>
+        <li><strong>Brace Matching</strong> - Auto-match (), [], {}, |[, |{</li>
+        <li><strong>Commenting</strong> - Line (--) and block (/* */) comments</li>
+    </ul>
 
-	<!-- Extension points defined by the plugin.
-		 Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
-	<extensions defaultExtensionNs="com.intellij">
-		<fileType
-				name="SuperSQL Query File"
-				implementationClass="org.clabs.superdb.SuperSQLQueryFileType"
-				fieldName="INSTANCE"
-				language="SuperSQL"
-				extensions="spq"/>
-	</extensions>
+    <h3>SuperSQL Overview</h3>
+    <p>SuperSQL is an extended SQL with pipe syntax for data transformation.
+    It supports SQL queries, pipe operators, aggregations, and rich data types
+    including IP addresses, durations, and more.</p>
+
+    <p>Learn more at <a href="https://superdb.org">superdb.org</a></p>
+    ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- File Type -->
+        <fileType
+                name="SuperSQL Query File"
+                implementationClass="org.clabs.superdb.SuperSQLQueryFileType"
+                fieldName="INSTANCE"
+                language="SuperSQL"
+                extensions="spq"/>
+
+        <!-- Parser Definition -->
+        <lang.parserDefinition
+                language="SuperSQL"
+                implementationClass="org.clabs.superdb.SuperSQLParserDefinition"/>
+
+        <!-- Syntax Highlighter -->
+        <lang.syntaxHighlighterFactory
+                language="SuperSQL"
+                implementationClass="org.clabs.superdb.SuperSQLSyntaxHighlighterFactory"/>
+
+        <!-- Color Settings Page -->
+        <colorSettingsPage
+                implementation="org.clabs.superdb.SuperSQLColorSettingsPage"/>
+
+        <!-- Brace Matcher -->
+        <lang.braceMatcher
+                language="SuperSQL"
+                implementationClass="org.clabs.superdb.SuperSQLBraceMatcher"/>
+
+        <!-- Commenter -->
+        <lang.commenter
+                language="SuperSQL"
+                implementationClass="org.clabs.superdb.SuperSQLCommenter"/>
+
+        <!-- Code Folding -->
+        <lang.foldingBuilder
+                language="SuperSQL"
+                implementationClass="org.clabs.superdb.SuperSQLFoldingBuilder"/>
+
+        <!-- Quote Handler for auto-completion of quotes -->
+        <lang.quoteHandler
+                language="SuperSQL"
+                implementationClass="org.clabs.superdb.SuperSQLQuoteHandler"/>
+    </extensions>
 </idea-plugin>

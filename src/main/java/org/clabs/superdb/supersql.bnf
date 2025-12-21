@@ -9,12 +9,707 @@
   psiImplPackage="org.clabs.superdb.psi.impl"
 
   elementTypeHolderClass="org.clabs.superdb.psi.SuperSQLTypes"
-  elementTypeClass="org.clabs.superdb.psi.SuperSQLElementType"
-  tokenTypeClass="org.clabs.superdb.psi.SuperSQLTokenType"
+  elementTypeClass="org.clabs.superdb.SuperSQLElementType"
+  tokenTypeClass="org.clabs.superdb.SuperSQLTokenType"
+
+  psiImplUtilClass="org.clabs.superdb.psi.impl.SuperSQLPsiImplUtil"
+
+  tokens = [
+    // Operators and Punctuation
+    PIPE_ARROW = '|>'
+    PIPE = '|'
+    CONCAT = '||'
+    CAST_OP = '::'
+    ASSIGN = ':='
+    SPREAD = '...'
+    EQ = '=='
+    NEQ = '!='
+    LE = '<='
+    GE = '>='
+    LT = '<'
+    GT = '>'
+    MATCH = '~'
+    PLUS = '+'
+    MINUS = '-'
+    STAR = '*'
+    SLASH = '/'
+    PERCENT = '%'
+    BANG = '!'
+    QUESTION = '?'
+    COLON = ':'
+    SEMICOLON = ';'
+    COMMA = ','
+    DOT = '.'
+    AT = '@'
+    AMP = '&'
+    EQUALS = '='
+    LPAREN = '('
+    RPAREN = ')'
+    LBRACKET = '['
+    RBRACKET = ']'
+    LBRACE = '{'
+    RBRACE = '}'
+    SET_LBRACKET = '|['
+    SET_RBRACKET = ']|'
+    MAP_LBRACE = '|{'
+    MAP_RBRACE = '}|'
+
+    // Comments
+    LINE_COMMENT = 'regexp:--[^\r\n]*'
+    BLOCK_COMMENT = 'regexp:/\*([^*]|\*+[^*/])*\*+/'
+
+    // Keywords
+    SELECT = 'SELECT'
+    FROM = 'FROM'
+    WHERE = 'WHERE'
+    GROUP = 'GROUP'
+    BY = 'BY'
+    HAVING = 'HAVING'
+    ORDER = 'ORDER'
+    LIMIT = 'LIMIT'
+    OFFSET = 'OFFSET'
+    UNION = 'UNION'
+    ALL = 'ALL'
+    DISTINCT = 'DISTINCT'
+    AS = 'AS'
+    ON = 'ON'
+    JOIN = 'JOIN'
+    LEFT = 'LEFT'
+    RIGHT = 'RIGHT'
+    INNER = 'INNER'
+    OUTER = 'OUTER'
+    FULL = 'FULL'
+    CROSS = 'CROSS'
+    ANTI = 'ANTI'
+    WITH = 'WITH'
+    VALUES = 'VALUES'
+    CASE = 'CASE'
+    WHEN = 'WHEN'
+    THEN = 'THEN'
+    ELSE = 'ELSE'
+    END = 'END'
+    CAST = 'CAST'
+    EXTRACT = 'EXTRACT'
+    SUBSTRING = 'SUBSTRING'
+    DATE_KW = 'DATE'
+    TIMESTAMP_KW = 'TIMESTAMP'
+    INTERVAL = 'INTERVAL'
+    FOR = 'FOR'
+    EXISTS = 'EXISTS'
+    BETWEEN = 'BETWEEN'
+    LIKE = 'LIKE'
+    IN = 'IN'
+    IS = 'IS'
+    ASC = 'ASC'
+    DESC = 'DESC'
+    NULLS = 'NULLS'
+    FIRST = 'FIRST'
+    LAST = 'LAST'
+
+    // Boolean/Logic
+    AND = 'AND'
+    OR = 'OR'
+    NOT = 'NOT'
+    TRUE = 'TRUE'
+    FALSE = 'FALSE'
+    NULL = 'NULL'
+
+    // Pipe Operators
+    FORK = 'FORK'
+    SWITCH = 'SWITCH'
+    SEARCH = 'SEARCH'
+    ASSERT = 'ASSERT'
+    SORT = 'SORT'
+    TOP = 'TOP'
+    CUT = 'CUT'
+    DROP = 'DROP'
+    HEAD = 'HEAD'
+    TAIL = 'TAIL'
+    SKIP_KW = 'SKIP'
+    UNIQ = 'UNIQ'
+    PUT = 'PUT'
+    RENAME = 'RENAME'
+    FUSE = 'FUSE'
+    SHAPES = 'SHAPES'
+    PASS = 'PASS'
+    EXPLODE = 'EXPLODE'
+    MERGE = 'MERGE'
+    UNNEST = 'UNNEST'
+    LOAD = 'LOAD'
+    OUTPUT = 'OUTPUT'
+    DEBUG = 'DEBUG'
+    COUNT = 'COUNT'
+    CALL = 'CALL'
+
+    // Declaration Keywords
+    CONST = 'CONST'
+    FN = 'FN'
+    LET = 'LET'
+    LAMBDA = 'LAMBDA'
+    OP = 'OP'
+    PRAGMA = 'PRAGMA'
+    TYPE_KW = 'TYPE'
+
+    // Aggregation
+    AGGREGATE = 'AGGREGATE'
+    SUMMARIZE = 'SUMMARIZE'
+    DEFAULT = 'DEFAULT'
+
+    // Type Keywords
+    ERROR = 'ERROR'
+    ENUM = 'ENUM'
+
+    // Primitive Types
+    UINT8 = 'uint8'
+    UINT16 = 'uint16'
+    UINT32 = 'uint32'
+    UINT64 = 'uint64'
+    INT8 = 'int8'
+    INT16 = 'int16'
+    INT32 = 'int32'
+    INT64 = 'int64'
+    FLOAT16 = 'float16'
+    FLOAT32 = 'float32'
+    FLOAT64 = 'float64'
+    BOOL = 'bool'
+    STRING_TYPE = 'string'
+    DURATION_TYPE = 'duration'
+    TIME_TYPE = 'time'
+    BYTES_TYPE = 'bytes'
+    IP_TYPE = 'ip'
+    NET_TYPE = 'net'
+
+    // PostgreSQL Types
+    BIGINT = 'BIGINT'
+    BOOLEAN = 'BOOLEAN'
+    BYTEA = 'BYTEA'
+    CHAR = 'CHAR'
+    CIDR = 'CIDR'
+    INTEGER = 'INTEGER'
+    INET = 'INET'
+    REAL = 'REAL'
+    SMALLINT = 'SMALLINT'
+    TEXT = 'TEXT'
+    VARCHAR = 'VARCHAR'
+
+    // Literals
+    NAN_LIT = 'regexp:NaN'
+    INF_LIT = 'regexp:[+-]?Inf'
+    TIMESTAMP_LIT = 'regexp:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2}(\.\d+)?)'
+    DURATION_LIT = 'regexp:-?(\d+(\.\d+)?(ns|us|ms|s|m|h|d|w|y))+'
+    IP6_NET_LIT = 'regexp:([0-9a-fA-F:]+)/\d+'
+    IP4_NET_LIT = 'regexp:\d+\.\d+\.\d+\.\d+/\d+'
+    IP6_LIT = 'regexp:[0-9a-fA-F:]+::[0-9a-fA-F:]*|[0-9a-fA-F]+:[0-9a-fA-F:]+:[0-9a-fA-F]+'
+    IP4_LIT = 'regexp:\d+\.\d+\.\d+\.\d+'
+    HEX_LIT = 'regexp:0x[0-9a-fA-F]*'
+    FLOAT_LIT = 'regexp:(\d+\.\d*|\.\d+)([eE][+-]?\d+)?'
+    INT_LIT = 'regexp:\d+'
+
+    // Strings
+    FSTRING = 'regexp:f["\'][^"\']*["\']'
+    RAW_STRING = "regexp:r[\"'][^\"']*[\"']"
+    DOUBLE_QUOTED_STRING = 'regexp:"([^"\\]|\\.)*"'
+    SINGLE_QUOTED_STRING = "regexp:'([^'\\]|\\.)*'"
+    BACKTICK_STRING = 'regexp:`([^`\\]|\\.)*`'
+    REGEX = 'regexp:/[^/\n\r]+/'
+
+    // Identifier
+    IDENTIFIER = 'regexp:[a-zA-Z_$][a-zA-Z0-9_$]*'
+  ]
 }
 
-superSqlFile ::= item_*
+// === Top Level ===
+superSqlFile ::= query_item*
 
-private item_ ::= (property|COMMENT|CRLF)
+private query_item ::= declaration | pipe_sequence | SEMICOLON {recoverWhile=query_item_recover}
+private query_item_recover ::= !(SEMICOLON | declaration_keyword | IDENTIFIER | LPAREN)
 
-property ::= (KEY? SEPARATOR VALUE?) | KEY
+private declaration_keyword ::= CONST | FN | LET | OP | PRAGMA | TYPE_KW
+
+// === Declarations ===
+declaration ::= const_decl | func_decl | query_decl | op_decl | pragma_decl | type_decl
+
+const_decl ::= CONST IDENTIFIER EQUALS expr {pin=1}
+
+func_decl ::= FN IDENTIFIER LPAREN identifier_list? RPAREN COLON expr {pin=1}
+
+query_decl ::= LET IDENTIFIER EQUALS LPAREN query_body RPAREN {pin=1}
+
+op_decl ::= OP IDENTIFIER identifier_list? COLON scope_body {pin=1}
+
+pragma_decl ::= PRAGMA IDENTIFIER EQUALS expr {pin=1}
+
+type_decl ::= TYPE_KW IDENTIFIER EQUALS type_expr {pin=1}
+
+identifier_list ::= IDENTIFIER (COMMA IDENTIFIER)*
+
+// === Pipe Sequences ===
+pipe_sequence ::= pipe_op (pipe_tail)*
+
+private pipe_tail ::= (PIPE | PIPE_ARROW) pipe_op
+
+pipe_op ::= operator
+          | scope_expr
+          | assignment_op
+          | aggregation
+          | call_expr
+          | expr_op
+
+scope_body ::= LPAREN (pipe_sequence | scope_expr) RPAREN
+
+scope_expr ::= LPAREN declaration* pipe_sequence RPAREN
+
+query_body ::= pipe_sequence
+
+// === Operators ===
+operator ::= sql_op
+           | fork_op
+           | switch_op
+           | search_op
+           | assert_op
+           | sort_op
+           | top_op
+           | cut_op
+           | distinct_op
+           | drop_op
+           | head_op
+           | tail_op
+           | skip_op
+           | where_op
+           | uniq_op
+           | put_op
+           | rename_op
+           | fuse_op
+           | join_op
+           | shapes_op
+           | from_op
+           | pass_op
+           | explode_op
+           | merge_op
+           | unnest_op
+           | values_op
+           | load_op
+           | output_op
+           | debug_op
+           | call_op
+           | count_op
+
+// SQL Operator
+sql_op ::= select_stmt {pin=1}
+
+select_stmt ::= with_clause? select_body order_by_clause? limit_offset_clause?
+
+with_clause ::= WITH cte_list {pin=1}
+
+cte_list ::= cte (COMMA cte)*
+
+cte ::= IDENTIFIER AS LPAREN query_body RPAREN {pin=3}
+
+select_body ::= select_core (set_op select_core)*
+
+private set_op ::= UNION ALL?
+
+select_core ::= SELECT select_option? select_list from_clause? where_clause? group_by_clause? having_clause?
+              | VALUES values_list
+
+private select_option ::= ALL | DISTINCT
+
+select_list ::= select_item (COMMA select_item)*
+
+select_item ::= STAR | expr alias?
+
+alias ::= AS? IDENTIFIER
+
+from_clause ::= FROM table_list {pin=1}
+
+table_list ::= table_expr (COMMA table_expr)*
+
+table_expr ::= table_primary (join_clause)*
+
+table_primary ::= LPAREN query_body RPAREN alias?
+                | from_source alias?
+
+from_source ::= REGEX | glob_pattern | text_ref | IDENTIFIER
+
+glob_pattern ::= STAR | IDENTIFIER (DOT IDENTIFIER)* STAR?
+
+text_ref ::= SINGLE_QUOTED_STRING | DOUBLE_QUOTED_STRING | fstring
+
+join_clause ::= join_type? JOIN table_primary join_condition?
+
+private join_type ::= INNER | LEFT OUTER? | RIGHT OUTER? | FULL OUTER? | CROSS | ANTI
+
+join_condition ::= ON expr
+
+where_clause ::= WHERE expr {pin=1}
+
+group_by_clause ::= GROUP BY expr_list {pin=1}
+
+having_clause ::= HAVING expr {pin=1}
+
+order_by_clause ::= ORDER BY order_list {pin=1}
+
+order_list ::= order_item (COMMA order_item)*
+
+order_item ::= expr order_direction? nulls_order?
+
+private order_direction ::= ASC | DESC
+
+private nulls_order ::= NULLS (FIRST | LAST)
+
+limit_offset_clause ::= LIMIT expr (OFFSET expr)?
+                      | OFFSET expr
+
+values_list ::= LPAREN expr_list RPAREN (COMMA LPAREN expr_list RPAREN)*
+
+// Fork Operator
+fork_op ::= FORK scope_body+ {pin=1}
+
+// Switch Operator
+switch_op ::= SWITCH expr? switch_case+ {pin=1}
+
+switch_case ::= case_label scope_body
+
+case_label ::= CASE expr | DEFAULT
+
+// Search Operator
+search_op ::= (SEARCH | QUESTION) search_expr {pin=1}
+
+search_expr ::= search_and (OR search_and)*
+
+private search_and ::= search_factor (AND? search_factor)*
+
+private search_factor ::= NOT? search_term | LPAREN search_expr RPAREN
+
+search_term ::= REGEX | glob_pattern | comparison_expr | function_call | literal
+
+// Assert Operator
+assert_op ::= ASSERT expr {pin=1}
+
+// Sort Operator
+sort_op ::= (SORT | ORDER BY) sort_arg* order_list? {pin=1}
+
+private sort_arg ::= MINUS IDENTIFIER
+
+// Top Operator
+top_op ::= TOP sort_arg* expr? order_list? {pin=1}
+
+// Call Operator
+call_op ::= CALL IDENTIFIER func_args? {pin=1}
+
+// Count Operator
+count_op ::= COUNT record_expr? {pin=1}
+
+// Cut Operator
+cut_op ::= CUT assignment_list {pin=1}
+
+// Distinct Operator
+distinct_op ::= DISTINCT expr {pin=1}
+
+// Drop Operator
+drop_op ::= DROP lval_list {pin=1}
+
+// Head Operator
+head_op ::= (HEAD | LIMIT) expr? {pin=1}
+
+// Tail Operator
+tail_op ::= TAIL expr? {pin=1}
+
+// Skip Operator
+skip_op ::= SKIP_KW expr {pin=1}
+
+// Where Operator
+where_op ::= WHERE expr {pin=1}
+
+// Uniq Operator
+uniq_op ::= UNIQ (MINUS IDENTIFIER)? {pin=1}
+
+// Put Operator
+put_op ::= PUT assignment_list {pin=1}
+
+// Rename Operator
+rename_op ::= RENAME assignment_list {pin=1}
+
+// Fuse Operator
+fuse_op ::= FUSE {pin=1}
+
+// Join Operator
+join_op ::= join_type JOIN scope_body? alias? join_condition {pin=2}
+
+// Shapes Operator
+shapes_op ::= SHAPES lval? {pin=1}
+
+// From Operator
+from_op ::= FROM from_item {pin=1}
+
+from_item ::= from_source commitish_args?
+
+commitish_args ::= AT text_ref meta_ref?
+                 | meta_ref
+
+meta_ref ::= COLON text_ref
+
+// Pass Operator
+pass_op ::= PASS {pin=1}
+
+// Explode Operator
+explode_op ::= EXPLODE expr_list BY type_expr as_clause? {pin=1}
+
+as_clause ::= AS lval
+
+// Merge Operator
+merge_op ::= MERGE order_list {pin=1}
+
+// Unnest Operator
+unnest_op ::= UNNEST expr into_clause? {pin=1}
+
+into_clause ::= IN scope_body
+
+// Values Operator
+values_op ::= VALUES {pin=1}
+
+// Load Operator
+load_op ::= LOAD text_ref commitish_args? {pin=1}
+
+// Output Operator
+output_op ::= OUTPUT IDENTIFIER {pin=1}
+
+// Debug Operator
+debug_op ::= DEBUG expr? {pin=1}
+
+// === Aggregation ===
+aggregation ::= aggregate_keyword? agg_assignments? group_clause? limit_arg?
+
+private aggregate_keyword ::= AGGREGATE | SUMMARIZE
+
+agg_assignments ::= agg_assignment (COMMA agg_assignment)*
+
+agg_assignment ::= (lval ASSIGN)? agg_expr
+
+agg_expr ::= agg_func where_clause?
+
+agg_func ::= IDENTIFIER LPAREN (ALL | DISTINCT)? expr? RPAREN
+           | COUNT LPAREN STAR RPAREN
+
+group_clause ::= GROUP? BY assignment_list
+
+limit_arg ::= WITH MINUS IDENTIFIER expr
+
+// === Assignment ===
+assignment_op ::= assignment_list
+
+assignment_list ::= assignment (COMMA assignment)*
+
+assignment ::= (lval ASSIGN)? expr
+
+// === Expressions ===
+expr_op ::= expr
+
+expr ::= cond_expr
+
+cond_expr ::= logical_or_expr (QUESTION expr COLON expr)?
+
+logical_or_expr ::= logical_and_expr (OR logical_and_expr)*
+
+logical_and_expr ::= not_expr (AND not_expr)*
+
+not_expr ::= (NOT | BANG)? between_expr
+
+between_expr ::= comparison_expr (NOT? BETWEEN comparison_expr AND comparison_expr)?
+
+comparison_expr ::= additive_expr (comparator additive_expr)?
+                  | additive_expr IS NOT? NULL
+                  | additive_expr NOT? IN (LPAREN expr_list RPAREN | subquery_expr)
+                  | additive_expr NOT? LIKE additive_expr
+
+private comparator ::= EQ | NEQ | LT | GT | LE | GE | MATCH | EQUALS
+
+additive_expr ::= multiplicative_expr ((PLUS | MINUS) multiplicative_expr)*
+
+multiplicative_expr ::= concat_expr ((STAR | SLASH | PERCENT) concat_expr)*
+
+concat_expr ::= unary_expr (CONCAT unary_expr)*
+
+unary_expr ::= (PLUS | MINUS)? cast_expr
+
+cast_expr ::= deref_expr (CAST_OP type_expr)*
+
+deref_expr ::= primary_expr (DOT deref_key | LBRACKET slice_expr RBRACKET | LBRACKET expr RBRACKET)*
+
+private deref_key ::= IDENTIFIER | DOUBLE_QUOTED_STRING | BACKTICK_STRING
+
+slice_expr ::= expr? COLON expr?
+
+primary_expr ::= case_expr
+               | record_expr
+               | array_expr
+               | set_expr
+               | map_expr
+               | sql_time_expr
+               | function_call
+               | lambda_expr
+               | subquery_expr
+               | tuple_expr
+               | type_literal
+               | literal
+               | id_expr
+               | paren_expr
+
+paren_expr ::= LPAREN expr RPAREN
+
+id_expr ::= IDENTIFIER
+
+case_expr ::= CASE expr? when_clause+ else_clause? END CASE? {pin=1 recoverWhile=case_recover}
+
+private case_recover ::= !(END | WHEN | ELSE | RPAREN | PIPE | PIPE_ARROW | SEMICOLON)
+
+when_clause ::= WHEN expr THEN expr {pin=1}
+
+else_clause ::= ELSE expr {pin=1}
+
+subquery_expr ::= LPAREN query_body RPAREN
+                | LBRACKET query_body RBRACKET
+
+tuple_expr ::= LPAREN expr COMMA expr_list RPAREN
+
+sql_time_expr ::= (DATE_KW | TIMESTAMP_KW) string_literal
+
+type_literal ::= LT type_expr GT
+
+// === Function Calls ===
+function_call ::= callable LPAREN func_args? RPAREN where_clause?
+                | EXTRACT LPAREN expr FROM expr RPAREN
+                | EXISTS LPAREN query_body RPAREN
+                | CAST LPAREN expr AS type_expr RPAREN
+                | SUBSTRING LPAREN expr (FROM expr)? (FOR expr)? RPAREN
+
+call_expr ::= IDENTIFIER func_args?
+
+private callable ::= lambda_expr | IDENTIFIER
+
+func_args ::= func_arg (COMMA func_arg)*
+
+func_arg ::= func_value | expr
+
+func_value ::= AMP IDENTIFIER | lambda_expr
+
+lambda_expr ::= LAMBDA identifier_list? COLON expr {pin=1}
+
+// === Literals ===
+literal ::= string_literal
+          | fstring
+          | number_literal
+          | boolean_literal
+          | null_literal
+          | bytes_literal
+          | duration_literal
+          | time_literal
+          | ip_literal
+          | net_literal
+          | REGEX
+
+string_literal ::= DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING | RAW_STRING
+
+fstring ::= FSTRING
+
+number_literal ::= FLOAT_LIT | INT_LIT | HEX_LIT | NAN_LIT | INF_LIT
+
+boolean_literal ::= TRUE | FALSE
+
+null_literal ::= NULL
+
+bytes_literal ::= HEX_LIT
+
+duration_literal ::= DURATION_LIT
+
+time_literal ::= TIMESTAMP_LIT
+
+ip_literal ::= IP4_LIT | IP6_LIT
+
+net_literal ::= IP4_NET_LIT | IP6_NET_LIT
+
+// === Record, Array, Set, Map ===
+record_expr ::= LBRACE record_elem_list? RBRACE {pin=1}
+
+record_elem_list ::= record_elem (COMMA record_elem)*
+
+record_elem ::= spread_elem | field_elem | expr_elem
+
+spread_elem ::= SPREAD expr {pin=1}
+
+field_elem ::= field_name COLON expr {pin=2}
+
+field_name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
+
+expr_elem ::= expr
+
+array_expr ::= LBRACKET array_elem_list? RBRACKET {pin=1}
+
+array_elem_list ::= array_elem (COMMA array_elem)*
+
+array_elem ::= spread_elem | expr_elem
+
+set_expr ::= SET_LBRACKET array_elem_list? SET_RBRACKET {pin=1}
+
+map_expr ::= MAP_LBRACE map_entry_list? MAP_RBRACE {pin=1}
+
+map_entry_list ::= map_entry (COMMA map_entry)*
+
+map_entry ::= expr COLON expr {pin=2}
+
+// === Types ===
+type_expr ::= type_union | component_type
+
+type_union ::= component_type (PIPE component_type)+
+
+component_type ::= primitive_type
+                 | error_type
+                 | enum_type
+                 | record_type
+                 | array_type
+                 | set_type
+                 | map_type
+                 | type_name
+                 | paren_type
+
+paren_type ::= LPAREN type_expr RPAREN
+
+primitive_type ::= UINT8 | UINT16 | UINT32 | UINT64
+                 | INT8 | INT16 | INT32 | INT64
+                 | FLOAT16 | FLOAT32 | FLOAT64
+                 | BOOL | STRING_TYPE | DURATION_TYPE | TIME_TYPE
+                 | BYTES_TYPE | IP_TYPE | NET_TYPE | NULL
+                 | postgres_type
+
+private postgres_type ::= BIGINT | BOOLEAN | BYTEA | CHAR | CIDR
+                        | INTEGER | INET | REAL | SMALLINT | TEXT | VARCHAR
+
+error_type ::= ERROR LPAREN type_expr RPAREN {pin=1}
+
+enum_type ::= ENUM LPAREN name_list RPAREN {pin=1}
+
+name_list ::= name (COMMA name)*
+
+name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
+
+record_type ::= LBRACE type_field_list? RBRACE
+
+type_field_list ::= type_field (COMMA type_field)*
+
+type_field ::= name COLON type_expr {pin=2}
+
+array_type ::= LBRACKET type_expr RBRACKET {pin=1}
+
+set_type ::= SET_LBRACKET type_expr SET_RBRACKET {pin=1}
+
+map_type ::= MAP_LBRACE type_expr COLON type_expr MAP_RBRACE {pin=1}
+
+type_name ::= IDENTIFIER (EQUALS type_expr)?
+
+// === L-values ===
+lval ::= deref_expr
+
+lval_list ::= lval (COMMA lval)*
+
+// === Expression Lists ===
+expr_list ::= expr (COMMA expr)*
