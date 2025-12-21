@@ -66,18 +66,16 @@ get_release_url() {
         exit 1
     fi
 
-    # Try different naming conventions for the LSP binary
-    # Common patterns: super-lsp-linux-amd64, supersql-lsp-linux-amd64, lsp-linux-amd64
+    # LSP binary naming convention: superdb-lsp-{os}-{arch}
     local binary_suffix=""
     if [[ "$platform" == windows-* ]]; then
         binary_suffix=".exe"
     fi
 
-    # Try to find matching asset
-    for pattern in "super-lsp-${platform}${binary_suffix}" \
-                   "supersql-lsp-${platform}${binary_suffix}" \
-                   "lsp-${platform}${binary_suffix}" \
-                   "super-lsp_${platform}${binary_suffix}"; do
+    # Try to find matching asset (primary: superdb-lsp-*, fallback: super-lsp-*)
+    for pattern in "superdb-lsp-${platform}${binary_suffix}" \
+                   "super-lsp-${platform}${binary_suffix}" \
+                   "supersql-lsp-${platform}${binary_suffix}"; do
         asset_url=$(echo "$release_data" | grep -o "\"browser_download_url\"[[:space:]]*:[[:space:]]*\"[^\"]*${pattern}[^\"]*\"" | head -1 | sed 's/.*"\(http[^"]*\)".*/\1/')
         if [[ -n "$asset_url" ]]; then
             echo "$asset_url"

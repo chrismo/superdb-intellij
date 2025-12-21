@@ -53,10 +53,10 @@ get_asset_url() {
         binary_suffix=".exe"
     fi
 
-    # Try different naming patterns
-    for pattern in "super-lsp-${platform}${binary_suffix}" \
-                   "supersql-lsp-${platform}${binary_suffix}" \
-                   "lsp-${platform}${binary_suffix}"; do
+    # Try different naming patterns (primary: superdb-lsp-*, fallback: super-lsp-*)
+    for pattern in "superdb-lsp-${platform}${binary_suffix}" \
+                   "super-lsp-${platform}${binary_suffix}" \
+                   "supersql-lsp-${platform}${binary_suffix}"; do
         local url
         url=$(echo "$release_data" | grep -o "\"browser_download_url\"[[:space:]]*:[[:space:]]*\"[^\"]*${pattern}[^\"]*\"" | head -1 | sed 's/.*"\(http[^"]*\)".*/\1/')
         if [[ -n "$url" ]]; then
@@ -107,7 +107,7 @@ main() {
     for platform in "${PLATFORMS[@]}"; do
         local url
         if url=$(get_asset_url "$release_data" "$platform"); then
-            local filename="super-lsp-${platform}"
+            local filename="superdb-lsp-${platform}"
             if [[ "$platform" == windows-* ]]; then
                 filename="${filename}.exe"
             fi
