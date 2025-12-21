@@ -1,0 +1,4 @@
+SELECT name, score
+FROM players
+ORDER BY score DESC, name ASC
+LIMIT 100

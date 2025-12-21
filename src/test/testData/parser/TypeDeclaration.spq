@@ -1,0 +1,7 @@
+type UserId = int64
+type UserRecord = {
+    id: int64,
+    name: string,
+    email: string | null,
+    tags: [string]
+}

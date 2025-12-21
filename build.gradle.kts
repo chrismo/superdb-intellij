@@ -43,6 +43,19 @@ sourceSets {
             srcDirs("src/main/gen")
         }
     }
+    test {
+        java {
+            srcDirs("src/test/java")
+        }
+        resources {
+            srcDirs("src/test/testData")
+        }
+    }
+}
+
+// Dependencies for testing
+dependencies {
+    testImplementation("junit:junit:4.13.2")
 }
 
 // Make compile depend on generation tasks
@@ -92,4 +105,15 @@ tasks {
 // Clean generated sources
 tasks.clean {
     delete("src/main/gen")
+}
+
+// Configure test task
+tasks.test {
+    useJUnit()
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = true
+    }
+    // Ensure tests run after code generation
+    dependsOn(generateLexer, generateParser)
 }

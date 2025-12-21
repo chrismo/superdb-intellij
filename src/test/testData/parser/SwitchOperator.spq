@@ -1,0 +1,12 @@
+from logs
+| switch level (
+    case "error" (
+      put severity := "high"
+    )
+    case "warning" (
+      put severity := "medium"
+    )
+    default (
+      put severity := "low"
+    )
+  )

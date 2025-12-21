@@ -1,0 +1,3 @@
+SELECT *
+FROM data
+WHERE x > 0 AND y <= 100 OR z != null
