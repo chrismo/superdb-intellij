@@ -93,10 +93,10 @@ intellij {
     version.set(ideVersion)
     type.set("IC") // Target IDE Platform
 
-    // LSP4IJ for Language Server Protocol support
-    plugins.set(listOf(
-        "com.redhat.devtools.lsp4ij:$lsp4ijVersion"
-    ))
+    // LSP4IJ temporarily disabled for build debugging
+    // plugins.set(listOf(
+    //     "com.redhat.devtools.lsp4ij:$lsp4ijVersion"
+    // ))
 }
 
 tasks {
