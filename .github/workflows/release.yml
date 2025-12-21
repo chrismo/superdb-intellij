@@ -44,20 +44,6 @@ jobs:
         with:
           fetch-depth: 0  # Full history for version calculation
 
-      - name: Calculate Version
-        id: version
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            # Use tag version
-            VERSION="${{ github.ref_name }}"
-          else
-            # Generate version from date and short SHA
-            VERSION="v$(date +'%Y.%m.%d')-$(git rev-parse --short HEAD)"
-          fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "artifact_name=superdb-plugin-${VERSION}" >> $GITHUB_OUTPUT
-          echo "Version: $VERSION"
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -84,6 +70,25 @@ jobs:
         run: |
           echo "LSP binaries downloaded:"
           ls -la src/main/resources/lsp/ 2>/dev/null || echo "No LSP directory found"
+
+      - name: Calculate Version
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            # Use explicit tag version
+            VERSION="${{ github.ref_name }}"
+          elif [ -f src/main/resources/lsp/VERSION ]; then
+            # Use LSP version to stay in sync
+            LSP_VERSION=$(cat src/main/resources/lsp/VERSION)
+            VERSION="${LSP_VERSION}"
+            echo "Using LSP version: $VERSION"
+          else
+            # Fallback to date-based version
+            VERSION="v$(date +'%Y.%m.%d')-$(git rev-parse --short HEAD)"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "artifact_name=superdb-plugin-${VERSION}" >> $GITHUB_OUTPUT
+          echo "Final version: $VERSION"
 
       - name: Build Plugin
         run: ./gradlew buildPlugin
