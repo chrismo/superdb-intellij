@@ -20,15 +20,15 @@ grammarKit {
     jflexRelease.set("1.9.1")
 }
 
-// Task to generate lexer from .flex file
-val generateLexer = tasks.register<GenerateLexerTask>("generateLexer") {
+// Configure lexer generation task (registered by grammarkit plugin)
+tasks.named<GenerateLexerTask>("generateLexer") {
     sourceFile.set(file("src/main/java/org/clabs/superdb/SuperSQL.flex"))
     targetOutputDir.set(file("src/main/gen/org/clabs/superdb"))
     purgeOldFiles.set(true)
 }
 
-// Task to generate parser from .bnf file
-val generateParser = tasks.register<GenerateParserTask>("generateParser") {
+// Configure parser generation task (registered by grammarkit plugin)
+tasks.named<GenerateParserTask>("generateParser") {
     sourceFile.set(file("src/main/java/org/clabs/superdb/supersql.bnf"))
     targetRootOutputDir.set(file("src/main/gen"))
     pathToParser.set("org/clabs/superdb/parser/SuperSQLParser.java")
@@ -60,11 +60,11 @@ dependencies {
 
 // Make compile depend on generation tasks
 tasks.compileJava {
-    dependsOn(generateLexer, generateParser)
+    dependsOn("generateLexer", "generateParser")
 }
 
 tasks.compileKotlin {
-    dependsOn(generateLexer, generateParser)
+    dependsOn("generateLexer", "generateParser")
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -131,7 +131,7 @@ tasks.test {
         showStandardStreams = true
     }
     // Ensure tests run after code generation
-    dependsOn(generateLexer, generateParser)
+    dependsOn("generateLexer", "generateParser")
 }
 
 // LSP Configuration
