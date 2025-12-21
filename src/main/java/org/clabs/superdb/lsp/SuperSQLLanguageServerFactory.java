@@ -42,7 +42,8 @@ public class SuperSQLLanguageServerFactory implements LanguageServerFactory {
 
         LOG.info("Starting SuperSQL LSP: " + lspPath);
 
-        ProcessStreamConnectionProvider provider = new ProcessStreamConnectionProvider(commands);
+        // ProcessStreamConnectionProvider is abstract in LSP4IJ 0.8.1, use anonymous subclass
+        ProcessStreamConnectionProvider provider = new ProcessStreamConnectionProvider(commands) {};
         provider.setWorkingDirectory(project.getBasePath());
         return provider;
     }
