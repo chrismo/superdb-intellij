@@ -20,15 +20,25 @@ grammarKit {
     jflexRelease.set("1.9.1")
 }
 
-// Configure lexer generation task (registered by grammarkit plugin)
-tasks.named<GenerateLexerTask>("generateLexer") {
+// Register or configure lexer generation task
+val generateLexer = if (tasks.findByName("generateLexer") != null) {
+    tasks.named<GenerateLexerTask>("generateLexer")
+} else {
+    tasks.register<GenerateLexerTask>("generateLexer")
+}
+generateLexer.configure {
     sourceFile.set(file("src/main/java/org/clabs/superdb/SuperSQL.flex"))
     targetOutputDir.set(file("src/main/gen/org/clabs/superdb"))
     purgeOldFiles.set(true)
 }
 
-// Configure parser generation task (registered by grammarkit plugin)
-tasks.named<GenerateParserTask>("generateParser") {
+// Register or configure parser generation task
+val generateParser = if (tasks.findByName("generateParser") != null) {
+    tasks.named<GenerateParserTask>("generateParser")
+} else {
+    tasks.register<GenerateParserTask>("generateParser")
+}
+generateParser.configure {
     sourceFile.set(file("src/main/java/org/clabs/superdb/supersql.bnf"))
     targetRootOutputDir.set(file("src/main/gen"))
     pathToParser.set("org/clabs/superdb/parser/SuperSQLParser.java")
