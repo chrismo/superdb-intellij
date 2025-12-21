@@ -84,8 +84,9 @@ val ideVersion: String by project.extra {
 }
 
 // LSP4IJ version - check for latest at https://plugins.jetbrains.com/plugin/23257-lsp4ij
+// Note: 0.17.0+ is needed for IntelliJ 2024.x compatibility
 val lsp4ijVersion: String by project.extra {
-    findProperty("lsp4ijVersion")?.toString() ?: "0.8.1"
+    findProperty("lsp4ijVersion")?.toString() ?: "0.17.0"
 }
 
 intellij {
