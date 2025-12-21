@@ -74,6 +74,7 @@
     AS = 'AS'
     ON = 'ON'
     JOIN = 'JOIN'
+    USING = 'USING'
     LEFT = 'LEFT'
     RIGHT = 'RIGHT'
     INNER = 'INNER'
@@ -82,6 +83,10 @@
     CROSS = 'CROSS'
     ANTI = 'ANTI'
     WITH = 'WITH'
+    RECURSIVE = 'RECURSIVE'
+    MATERIALIZED = 'MATERIALIZED'
+    ORDINALITY = 'ORDINALITY'
+    VALUE = 'VALUE'
     VALUES = 'VALUES'
     CASE = 'CASE'
     WHEN = 'WHEN'
@@ -299,11 +304,11 @@ sql_op ::= select_stmt {pin=1}
 
 select_stmt ::= with_clause? select_body order_by_clause? limit_offset_clause?
 
-with_clause ::= WITH cte_list {pin=1}
+with_clause ::= WITH RECURSIVE? cte_list {pin=1}
 
 cte_list ::= cte (COMMA cte)*
 
-cte ::= IDENTIFIER AS LPAREN query_body RPAREN {pin=3}
+cte ::= IDENTIFIER AS MATERIALIZED? LPAREN query_body RPAREN {pin=3}
 
 select_body ::= select_core (set_op select_core)*
 
@@ -340,6 +345,7 @@ join_clause ::= join_type? JOIN table_primary join_condition?
 private join_type ::= INNER | LEFT OUTER? | RIGHT OUTER? | FULL OUTER? | CROSS | ANTI
 
 join_condition ::= ON expr
+                 | USING LPAREN identifier_list RPAREN
 
 where_clause ::= WHERE expr {pin=1}
 
@@ -461,7 +467,9 @@ as_clause ::= AS lval
 merge_op ::= MERGE order_list {pin=1}
 
 // Unnest Operator
-unnest_op ::= UNNEST expr into_clause? {pin=1}
+unnest_op ::= UNNEST expr ordinality_clause? into_clause? {pin=1}
+
+ordinality_clause ::= WITH ORDINALITY
 
 into_clause ::= IN scope_body
 

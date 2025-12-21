@@ -137,6 +137,7 @@ IP6_NET={IP6}"/"{DIGIT}+
   [Aa][Ss]                           { return AS; }
   [Oo][Nn]                           { return ON; }
   [Jj][Oo][Ii][Nn]                   { return JOIN; }
+  [Uu][Ss][Ii][Nn][Gg]               { return USING; }
   [Ll][Ee][Ff][Tt]                   { return LEFT; }
   [Rr][Ii][Gg][Hh][Tt]               { return RIGHT; }
   [Ii][Nn][Nn][Ee][Rr]               { return INNER; }
@@ -145,6 +146,10 @@ IP6_NET={IP6}"/"{DIGIT}+
   [Cc][Rr][Oo][Ss][Ss]               { return CROSS; }
   [Aa][Nn][Tt][Ii]                   { return ANTI; }
   [Ww][Ii][Tt][Hh]                   { return WITH; }
+  [Rr][Ee][Cc][Uu][Rr][Ss][Ii][Vv][Ee] { return RECURSIVE; }
+  [Mm][Aa][Tt][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee][Dd] { return MATERIALIZED; }
+  [Oo][Rr][Dd][Ii][Nn][Aa][Ll][Ii][Tt][Yy] { return ORDINALITY; }
+  [Vv][Aa][Ll][Uu][Ee]               { return VALUE; }
   [Vv][Aa][Ll][Uu][Ee][Ss]           { return VALUES; }
   [Cc][Aa][Ss][Ee]                   { return CASE; }
   [Ww][Hh][Ee][Nn]                   { return WHEN; }
