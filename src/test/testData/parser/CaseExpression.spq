@@ -1,0 +1,7 @@
+SELECT
+    CASE status
+        WHEN "active" THEN 1
+        WHEN "pending" THEN 0
+        ELSE -1
+    END AS status_code
+FROM users

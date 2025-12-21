@@ -1,0 +1,6 @@
+from events
+| fork (
+    count() by type
+  ) (
+    distinct user_id
+  )

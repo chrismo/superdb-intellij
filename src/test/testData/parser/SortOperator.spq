@@ -1,0 +1,3 @@
+from events
+| sort -r timestamp, priority DESC
+| top 10 score

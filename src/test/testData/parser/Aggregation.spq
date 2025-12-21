@@ -1,0 +1,5 @@
+summarize
+    total := sum(amount),
+    avg_val := avg(amount),
+    cnt := count()
+by region, category

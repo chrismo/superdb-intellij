@@ -1,0 +1,4 @@
+from data.log
+| where level == "error"
+| sort -r timestamp
+| head 50

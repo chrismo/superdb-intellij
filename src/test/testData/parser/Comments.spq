@@ -1,0 +1,5 @@
+-- This is a line comment
+SELECT * FROM users
+/* This is a
+   block comment */
+WHERE id > 0

@@ -1,0 +1,4 @@
+SELECT o.id, c.name, o.total
+FROM orders o
+LEFT JOIN customers c ON o.customer_id == c.id
+WHERE o.status != "cancelled"
