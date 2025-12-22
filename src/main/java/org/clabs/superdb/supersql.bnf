@@ -569,11 +569,16 @@ primary_expr ::= case_expr
                | tuple_expr
                | type_literal
                | literal
-               | id_expr
+               | id_or_call
                | paren_expr
 
 paren_expr ::= LPAREN expr RPAREN
 
+// Left-factored to handle both plain identifiers and function calls
+// This ensures IDENTIFIER is matched first, then optionally followed by (args)
+id_or_call ::= IDENTIFIER (LPAREN func_args? RPAREN where_clause?)?
+
+// Keep id_expr for backward compatibility in other rules
 id_expr ::= IDENTIFIER
 
 case_expr ::= CASE expr? when_clause+ else_clause? END CASE? {pin=1 recoverWhile=case_recover}
@@ -594,15 +599,14 @@ sql_time_expr ::= (DATE_KW | TIMESTAMP_KW) string_literal
 type_literal ::= LT type_expr GT
 
 // === Function Calls ===
-function_call ::= callable LPAREN func_args? RPAREN where_clause?
+// Lambda calls and SQL builtin functions (IDENTIFIER calls handled by id_or_call)
+function_call ::= lambda_expr LPAREN func_args? RPAREN where_clause?
                 | EXTRACT LPAREN expr FROM expr RPAREN
                 | EXISTS LPAREN query_body RPAREN
                 | CAST LPAREN expr AS type_expr RPAREN
                 | SUBSTRING LPAREN expr (FROM expr)? (FOR expr)? RPAREN
 
 call_expr ::= IDENTIFIER func_args?
-
-private callable ::= lambda_expr | IDENTIFIER
 
 func_args ::= func_arg (COMMA func_arg)*
 
