@@ -18,9 +18,3 @@ SuperSQL File(0,19)
                         SuperSQLFromSourceImpl(FROM_SOURCE)(14,19)
                           SuperSQLGlobPatternImpl(GLOB_PATTERN)(14,19)
                             PsiElement(SuperSQLTokenType.IDENTIFIER)('users')(14,19)
-  SuperSQLPipeSequenceImpl(PIPE_SEQUENCE)(19,19)
-    SuperSQLPipeOpImpl(PIPE_OP)(19,19)
-      SuperSQLAggregationImpl(AGGREGATION)(19,19)
-        <empty list>
-  PsiErrorElement:Empty element parsed in 'superSqlFile' at offset 19(19,19)
-    <empty list>
