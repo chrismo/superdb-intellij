@@ -487,9 +487,13 @@ output_op ::= OUTPUT IDENTIFIER {pin=1}
 debug_op ::= DEBUG expr? {pin=1}
 
 // === Aggregation ===
-// Aggregation must have at least one meaningful component to prevent empty matches.
-// Valid forms: aggregate_keyword alone, agg_assignments (function calls), or group_clause.
-aggregation ::= aggregate_keyword agg_assignments? group_clause? limit_arg?
+// Aggregation requires at least one meaningful component after any keyword.
+// Valid forms:
+//   - aggregate_keyword + agg_assignments (with optional group/limit)
+//   - aggregate_keyword + group_clause (for "summarize by x")
+//   - agg_assignments alone (for bare "count() by x")
+aggregation ::= aggregate_keyword agg_assignments group_clause? limit_arg?
+              | aggregate_keyword group_clause limit_arg?
               | agg_assignments group_clause? limit_arg?
 
 private aggregate_keyword ::= AGGREGATE | SUMMARIZE
