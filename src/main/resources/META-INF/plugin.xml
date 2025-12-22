@@ -86,5 +86,10 @@
         <lang.quoteHandler
                 language="SuperSQL"
                 implementationClass="org.clabs.superdb.SuperSQLQuoteHandler"/>
+
+        <!-- Annotator for semantic highlighting (built-in functions) -->
+        <annotator
+                language="SuperSQL"
+                implementationClass="org.clabs.superdb.SuperSQLAnnotator"/>
     </extensions>
 </idea-plugin>

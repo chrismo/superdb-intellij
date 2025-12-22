@@ -22,6 +22,7 @@ public class SuperSQLColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Line comment", SuperSQLSyntaxHighlighter.LINE_COMMENT),
             new AttributesDescriptor("Block comment", SuperSQLSyntaxHighlighter.BLOCK_COMMENT),
             new AttributesDescriptor("Identifier", SuperSQLSyntaxHighlighter.IDENTIFIER),
+            new AttributesDescriptor("Function call", SuperSQLSyntaxHighlighter.FUNCTION_CALL),
             new AttributesDescriptor("Operator", SuperSQLSyntaxHighlighter.OPERATION_SIGN),
             new AttributesDescriptor("Parentheses", SuperSQLSyntaxHighlighter.PARENTHESES),
             new AttributesDescriptor("Brackets", SuperSQLSyntaxHighlighter.BRACKETS),
@@ -94,13 +95,22 @@ type UserRecord = {
     metadata: |{string: string}|
 }
 
--- Aggregation
+-- Aggregation with built-in functions
 summarize
-    total := sum(amount),
-    avg_amount := avg(amount),
+    total := <func>sum</func>(amount),
+    avg_amount := <func>avg</func>(amount),
     user_count := count(distinct user_id)
 by region, category
 with -limit 1000
+
+-- Built-in functions
+<func>len</func>(name)
+<func>lower</func>(email)
+<func>coalesce</func>(value, 0)
+<func>typeof</func>(data)
+<func>cidr_match</func>(ip, 10.0.0.0/8)
+<func>split</func>(path, "/")
+<func>trim</func>(input)
 
 -- Special literals
 192.168.1.0/24
@@ -121,7 +131,7 @@ NaN
     @Nullable
     @Override
     public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {
-        return null;
+        return Map.of("func", SuperSQLSyntaxHighlighter.FUNCTION_CALL);
     }
 
     @Override
