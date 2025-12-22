@@ -1,8 +1,4 @@
 SuperSQL File(0,28)
-  SuperSQLPipeSequenceImpl(PIPE_SEQUENCE)(0,0)
-    SuperSQLPipeOpImpl(PIPE_OP)(0,0)
-      SuperSQLAggregationImpl(AGGREGATION)(0,0)
-        <empty list>
   PsiElement(SuperSQLTokenType.[)('[')(0,1)
   PsiElement(SuperSQLTokenType.INT_LIT)('1')(1,2)
   PsiElement(SuperSQLTokenType.,)(',')(2,3)
@@ -13,10 +9,6 @@ SuperSQL File(0,28)
   PsiElement(SuperSQLTokenType....)('...')(10,13)
   PsiErrorElement:'existing' unexpected(13,13)
     <empty list>
-  SuperSQLPipeSequenceImpl(PIPE_SEQUENCE)(13,13)
-    SuperSQLPipeOpImpl(PIPE_OP)(13,13)
-      SuperSQLAggregationImpl(AGGREGATION)(13,13)
-        <empty list>
   PsiElement(SuperSQLTokenType.IDENTIFIER)('existing')(13,21)
   PsiElement(SuperSQLTokenType.,)(',')(21,22)
   PsiElement(SuperSQLTokenType.INT_LIT)('4')(23,24)

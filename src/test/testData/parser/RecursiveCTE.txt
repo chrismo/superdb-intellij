@@ -1,18 +1,8 @@
 SuperSQL File(0,271)
   PsiComment(SuperSQLTokenType.LINE_COMMENT)('-- Recursive CTE example')(0,24)
-  SuperSQLPipeSequenceImpl(PIPE_SEQUENCE)(25,25)
-    SuperSQLPipeOpImpl(PIPE_OP)(25,25)
-      SuperSQLAggregationImpl(AGGREGATION)(25,25)
-        <empty list>
   PsiElement(SuperSQLTokenType.WITH)('WITH')(25,29)
   PsiElement(SuperSQLTokenType.RECURSIVE)('RECURSIVE')(30,39)
   PsiErrorElement:'employee_tree' unexpected(39,39)
-    <empty list>
-  SuperSQLPipeSequenceImpl(PIPE_SEQUENCE)(40,40)
-    SuperSQLPipeOpImpl(PIPE_OP)(40,40)
-      SuperSQLAggregationImpl(AGGREGATION)(40,40)
-        <empty list>
-  PsiErrorElement:Empty element parsed in 'superSqlFile' at offset 40(40,40)
     <empty list>
   PsiElement(SuperSQLTokenType.IDENTIFIER)('employee_tree')(40,53)
   PsiElement(DUMMY_BLOCK)(53,103)
