@@ -8,37 +8,67 @@ Fully automated synchronization of this IntelliJ plugin's grammar with the lates
 
 Execute ALL steps below in sequence. Do NOT stop for confirmation. Fix any issues encountered automatically.
 
-### Phase 1: Fetch Upstream
+### Phase 1: Fetch Upstream Sources
 
-1. Fetch the upstream PEG grammar:
-   - URL: `https://raw.githubusercontent.com/brimdata/super/main/compiler/parser/parser.peg`
-   - Download the complete file content
+Use `gh api` (not curl) to fetch files from brimdata/super main branch:
 
-2. Fetch the upstream valid examples:
-   - URL: `https://raw.githubusercontent.com/brimdata/super/main/compiler/parser/valid.spq`
-   - These are canonical valid SuperSQL queries
+| File | Purpose | What to Extract |
+|------|---------|-----------------|
+| `compiler/parser/parser.peg` | Language syntax | Keywords, operators, types |
+| `runtime/sam/expr/function/function.go` | Scalar functions | Built-in function names (not in grammar) |
+| `runtime/sam/expr/agg/agg.go` | Aggregate functions | Aggregate function names (count, sum, avg, etc.) |
+| `compiler/parser/valid.spq` | Test examples | Canonical valid SuperSQL queries |
 
-3. Get the latest commit hash from upstream:
-   - Use: `curl -sI https://api.github.com/repos/brimdata/super/commits/main | grep etag` or similar
-   - Or fetch from: `https://api.github.com/repos/brimdata/super/commits/main`
+Fetch each file:
+```bash
+gh api repos/brimdata/super/contents/compiler/parser/parser.peg --jq '.content' | base64 -d
+gh api repos/brimdata/super/contents/runtime/sam/expr/function/function.go --jq '.content' | base64 -d
+gh api repos/brimdata/super/contents/runtime/sam/expr/agg/agg.go --jq '.content' | base64 -d
+gh api repos/brimdata/super/contents/compiler/parser/valid.spq --jq '.content' | base64 -d
+```
 
-### Phase 2: Analyze Current Implementation
+Get the latest commit info:
+```bash
+gh api repos/brimdata/super/commits/main --jq '.sha'
+```
+
+### Phase 2: Extract Function Names from Go Files
+
+**From `function.go`**: Look for function registrations like:
+```go
+zed.RegisterFunction("function_name", ...)
+// or
+"function_name": &SomeFunction{},
+// or similar patterns
+```
+
+**From `agg.go`**: Look for aggregate registrations like:
+```go
+"count": &Count{},
+"sum": &Sum{},
+// etc.
+```
+
+Build a list of all function names - these should be recognized as built-in functions for syntax highlighting.
+
+### Phase 3: Analyze Current Implementation
 
 Read ALL of these files to understand current state:
 - `src/main/java/org/clabs/superdb/SuperSQL.flex` (lexer)
 - `src/main/java/org/clabs/superdb/supersql.bnf` (grammar)
 - `src/main/java/org/clabs/superdb/SuperSQLSyntaxHighlighter.java`
 
-### Phase 3: Identify Drift
+### Phase 4: Identify Drift
 
-Compare upstream PEG grammar with our implementation. Identify:
-- **Missing tokens**: Keywords/operators in upstream but not in our lexer
+Compare upstream sources with our implementation. Identify:
+- **Missing keywords**: Keywords in parser.peg but not in our lexer
+- **Missing functions**: Built-in functions from .go files not highlighted
 - **Extra tokens**: In our lexer but removed from upstream
 - **Changed patterns**: Tokens with different syntax or semantics
 - **New operators**: Pipe operators added upstream
 - **New types**: Primitive or PostgreSQL types added
 
-### Phase 4: Update Lexer (SuperSQL.flex)
+### Phase 5: Update Lexer (SuperSQL.flex)
 
 For EACH missing or changed token:
 1. Add the token pattern to the lexer
@@ -46,17 +76,21 @@ For EACH missing or changed token:
 3. Ensure proper ordering (longer matches before shorter)
 4. Return the appropriate token type
 
+For built-in functions:
+- Consider adding them as recognized identifiers for semantic highlighting
+- Or document them for future LSP/completion support
+
 For removed tokens:
 - Remove from lexer (but check if still used elsewhere first)
 
-### Phase 5: Update Grammar (supersql.bnf)
+### Phase 6: Update Grammar (supersql.bnf)
 
 1. Add new tokens to the `tokens = [...]` block
 2. Update grammar rules to use new tokens
 3. Add `{pin=N}` attributes for error recovery where appropriate
 4. Ensure grammar rules match upstream semantics
 
-### Phase 6: Update Syntax Highlighter
+### Phase 7: Update Syntax Highlighter
 
 In `SuperSQLSyntaxHighlighter.java`:
 - Add new tokens to appropriate categories:
@@ -65,7 +99,7 @@ In `SuperSQLSyntaxHighlighter.java`:
   - `TYPE_KEYWORD_KEYS` - Type names (uint8, string, etc.)
   - `CONSTANT_KEYS` - Constants (TRUE, FALSE, NULL, NaN, Inf)
 
-### Phase 7: Generate Lexer and Parser
+### Phase 8: Generate Lexer and Parser
 
 Run:
 ```bash
@@ -74,7 +108,7 @@ Run:
 
 If this fails, fix the errors in .flex or .bnf files and retry.
 
-### Phase 8: Build
+### Phase 9: Build
 
 Run:
 ```bash
@@ -86,7 +120,7 @@ If build fails:
 - Fix compilation errors in generated or source files
 - Retry until build succeeds
 
-### Phase 9: Run Tests
+### Phase 10: Run Tests
 
 Run:
 ```bash
@@ -104,7 +138,7 @@ If tests fail:
 4. For other failures:
    - Fix the underlying issue
 
-### Phase 10: Regenerate Test Expected Outputs
+### Phase 11: Regenerate Test Expected Outputs
 
 After fixing any test issues, regenerate expected outputs:
 ```bash
@@ -118,7 +152,7 @@ Then run tests again to confirm:
 
 Repeat until ALL tests pass.
 
-### Phase 11: Validate Against SuperDB (if available)
+### Phase 12: Validate Against SuperDB (if available)
 
 If `super` binary is available:
 ```bash
@@ -132,11 +166,11 @@ If validation fails for any test file:
 
 Skip this step if `super` is not installed.
 
-### Phase 12: Update Examples
+### Phase 13: Update Examples
 
 Review and update `examples/*.spq` files if new syntax was added.
 
-### Phase 13: Final Verification
+### Phase 14: Final Verification
 
 Run the complete build and test cycle one more time:
 ```bash
@@ -145,7 +179,7 @@ Run the complete build and test cycle one more time:
 
 This MUST pass before committing.
 
-### Phase 14: Commit
+### Phase 15: Commit
 
 Create a commit with:
 ```bash
@@ -164,7 +198,7 @@ EOF
 )"
 ```
 
-### Phase 15: Push
+### Phase 16: Push
 
 Push to the current branch:
 ```bash
@@ -196,10 +230,16 @@ After completion, provide a summary:
 ## Sync Complete
 
 ### Changes Made
-- Added tokens: X, Y, Z
-- Removed tokens: A, B
+- Added keywords: X, Y, Z
+- Added functions: A, B, C
+- Removed tokens: D, E
 - Updated rules: ...
 - Fixed bugs: ...
+
+### Upstream Sources
+- parser.peg commit: <hash>
+- function.go commit: <hash>
+- agg.go commit: <hash>
 
 ### Test Results
 - All tests passing: Yes/No
