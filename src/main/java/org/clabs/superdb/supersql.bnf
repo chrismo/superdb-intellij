@@ -253,10 +253,11 @@ pipe_sequence ::= pipe_op (pipe_tail)*
 
 private pipe_tail ::= (PIPE | PIPE_ARROW) pipe_op
 
-pipe_op ::= operator
-          | scope_expr
-          | assignment_op
+// Aggregation before operator to properly handle count() vs bare count
+pipe_op ::= scope_expr
           | aggregation
+          | operator
+          | assignment_op
           | call_expr
           | expr_op
 
@@ -499,8 +500,9 @@ agg_assignment ::= (lval ASSIGN)? agg_expr
 
 agg_expr ::= agg_func where_clause?
 
+// Aggregation functions: count(), count(*), count(x), count(distinct x), sum(x), avg(all x), etc.
 agg_func ::= IDENTIFIER LPAREN (ALL | DISTINCT)? expr? RPAREN
-           | COUNT LPAREN STAR RPAREN
+           | COUNT LPAREN (ALL | DISTINCT)? (STAR | expr)? RPAREN
 
 group_clause ::= GROUP? BY assignment_list
 
