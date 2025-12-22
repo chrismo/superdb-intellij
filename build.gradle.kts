@@ -145,6 +145,8 @@ tasks.test {
     forkEvery = 1
     // Ensure tests run after code generation
     dependsOn("generateLexer", "generateParser")
+    // Pass system properties for test data regeneration
+    systemProperty("idea.tests.overwrite.data", System.getProperty("idea.tests.overwrite.data") ?: "false")
 }
 
 // LSP Configuration

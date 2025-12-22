@@ -1,16 +1,6 @@
 SuperSQL File(0,119)
-  SuperSQLPipeSequenceImpl(PIPE_SEQUENCE)(0,0)
-    SuperSQLPipeOpImpl(PIPE_OP)(0,0)
-      SuperSQLAggregationImpl(AGGREGATION)(0,0)
-        <empty list>
   PsiElement(SuperSQLTokenType.SELECT)('SELECT')(0,6)
   PsiErrorElement:'o' unexpected(6,6)
-    <empty list>
-  SuperSQLPipeSequenceImpl(PIPE_SEQUENCE)(7,7)
-    SuperSQLPipeOpImpl(PIPE_OP)(7,7)
-      SuperSQLAggregationImpl(AGGREGATION)(7,7)
-        <empty list>
-  PsiErrorElement:Empty element parsed in 'superSqlFile' at offset 7(7,7)
     <empty list>
   PsiElement(SuperSQLTokenType.IDENTIFIER)('o')(7,8)
   PsiElement(DUMMY_BLOCK)(8,28)
