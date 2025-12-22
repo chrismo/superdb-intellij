@@ -2,15 +2,16 @@
 # Download SuperSQL LSP binaries for all platforms (for distribution)
 #
 # Usage: ./scripts/download-all-platforms.sh [version]
-#   version: Release version (default: latest)
+#   version: Release version tag (default: latest)
+#
+# Supports: gh (GitHub CLI) preferred, falls back to curl + super
 
 set -euo pipefail
 
-VERSION="${1:-latest}"
+VERSION="${1:-}"
 LSP_REPO="${LSP_REPO:-chrismo/superdb-syntaxes}"
 OUTPUT_DIR="${OUTPUT_DIR:-src/main/resources/lsp}"
 
-# Platform configurations
 PLATFORMS=(
     "linux-amd64"
     "linux-arm64"
@@ -19,119 +20,64 @@ PLATFORMS=(
     "windows-amd64"
 )
 
-# Get release data once
-get_release_data() {
-    local version="$1"
-    local api_url auth_header=""
+mkdir -p "$OUTPUT_DIR"
 
-    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-        auth_header="Authorization: token $GITHUB_TOKEN"
+# Try gh CLI first (simpler)
+if command -v gh &> /dev/null; then
+    echo "Downloading LSP binaries from $LSP_REPO using gh..."
+
+    GH_ARGS=(release download --repo "$LSP_REPO" --pattern 'superdb-lsp-*' --dir "$OUTPUT_DIR" --clobber)
+    if [[ -n "$VERSION" && "$VERSION" != "latest" ]]; then
+        GH_ARGS+=("$VERSION")
     fi
 
-    if [[ "$version" == "latest" ]]; then
-        api_url="https://api.github.com/repos/${LSP_REPO}/releases/latest"
-    else
-        api_url="https://api.github.com/repos/${LSP_REPO}/releases/tags/${version}"
+    gh "${GH_ARGS[@]}"
+
+    # Get the version that was downloaded
+    DOWNLOADED_VERSION=$(gh release view --repo "$LSP_REPO" ${VERSION:+"$VERSION"} --json tagName -q '.tagName')
+
+# Fallback to curl + super for JSON parsing
+elif command -v super &> /dev/null; then
+    echo "Downloading LSP binaries from $LSP_REPO using curl + super..."
+
+    API_URL="https://api.github.com/repos/${LSP_REPO}/releases/latest"
+    if [[ -n "$VERSION" && "$VERSION" != "latest" ]]; then
+        API_URL="https://api.github.com/repos/${LSP_REPO}/releases/tags/${VERSION}"
     fi
 
-    echo "Fetching release info from: $api_url" >&2
-
-    if [[ -n "$auth_header" ]]; then
-        curl -sS -H "$auth_header" -H "Accept: application/vnd.github+json" "$api_url"
-    else
-        curl -sS -H "Accept: application/vnd.github+json" "$api_url"
-    fi
-}
-
-# Extract asset URL from release data
-get_asset_url() {
-    local release_data="$1"
-    local platform="$2"
-    local binary_suffix=""
-
-    if [[ "$platform" == windows-* ]]; then
-        binary_suffix=".exe"
-    fi
-
-    # Try different naming patterns (primary: superdb-lsp-*, fallback: super-lsp-*)
-    for pattern in "superdb-lsp-${platform}${binary_suffix}" \
-                   "super-lsp-${platform}${binary_suffix}" \
-                   "supersql-lsp-${platform}${binary_suffix}"; do
-        local url
-        url=$(echo "$release_data" | grep -o "\"browser_download_url\"[[:space:]]*:[[:space:]]*\"[^\"]*${pattern}[^\"]*\"" | head -1 | sed 's/.*"\(http[^"]*\)".*/\1/')
-        if [[ -n "$url" ]]; then
-            echo "$url"
-            return 0
-        fi
-    done
-
-    return 1
-}
-
-# Download a single binary
-download_binary() {
-    local url="$1"
-    local output_file="$2"
-    local auth_header=""
-
-    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-        auth_header="Authorization: token $GITHUB_TOKEN"
-    fi
-
-    mkdir -p "$(dirname "$output_file")"
-
-    if [[ -n "$auth_header" ]]; then
-        curl -sSL -H "$auth_header" -H "Accept: application/octet-stream" -o "$output_file" "$url"
-    else
-        curl -sSL -H "Accept: application/octet-stream" -o "$output_file" "$url"
-    fi
-
-    chmod +x "$output_file"
-}
-
-# Main
-main() {
-    local release_data
-    release_data=$(get_release_data "$VERSION")
-
-    # Extract version tag
-    local tag_name
-    tag_name=$(echo "$release_data" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"\([^"]*\)"$/\1/')
-    echo "Release version: $tag_name"
-
-    mkdir -p "$OUTPUT_DIR"
-
-    local downloaded=0
-    local failed=0
+    RELEASE_JSON=$(curl -sS -H "Accept: application/vnd.github+json" "$API_URL")
+    DOWNLOADED_VERSION=$(echo "$RELEASE_JSON" | super -f text -c 'tag_name')
 
     for platform in "${PLATFORMS[@]}"; do
-        local url
-        if url=$(get_asset_url "$release_data" "$platform"); then
-            local filename="superdb-lsp-${platform}"
-            if [[ "$platform" == windows-* ]]; then
-                filename="${filename}.exe"
-            fi
+        binary_name="superdb-lsp-${platform}"
+        if [[ "$platform" == windows-* ]]; then
+            binary_name="${binary_name}.exe"
+        fi
 
-            echo "Downloading: $platform..."
-            if download_binary "$url" "${OUTPUT_DIR}/${filename}"; then
-                echo "  ✓ ${OUTPUT_DIR}/${filename}"
-                ((downloaded++))
-            else
-                echo "  ✗ Failed to download $platform"
-                ((failed++))
-            fi
+        url=$(echo "$RELEASE_JSON" | super -f text -c "assets | where name == \"$binary_name\" | browser_download_url" 2>/dev/null || true)
+
+        if [[ -n "$url" ]]; then
+            echo "  Downloading $binary_name..."
+            curl -sSL -o "${OUTPUT_DIR}/${binary_name}" "$url"
         else
-            echo "  ⚠ No binary found for $platform (may not be supported)"
+            echo "  ⚠ No binary found for $platform"
         fi
     done
+else
+    echo "Error: Neither 'gh' nor 'super' command found." >&2
+    echo "Install GitHub CLI (gh) or SuperDB CLI (super) to download LSP binaries." >&2
+    exit 1
+fi
 
-    echo ""
-    echo "Download complete: $downloaded succeeded, $failed failed"
-    echo "Version: $tag_name"
+# Make binaries executable
+chmod +x "$OUTPUT_DIR"/superdb-lsp-* 2>/dev/null || true
 
-    # Write version file
-    echo "$tag_name" > "${OUTPUT_DIR}/VERSION"
-    echo "Version written to: ${OUTPUT_DIR}/VERSION"
-}
+# Write version file
+echo "$DOWNLOADED_VERSION" > "$OUTPUT_DIR/VERSION"
 
-main "$@"
+echo ""
+echo "Downloaded LSP binaries:"
+ls -la "$OUTPUT_DIR"/superdb-lsp-* 2>/dev/null || echo "  (none found)"
+echo ""
+echo "Version: $DOWNLOADED_VERSION"
+echo "Version written to: $OUTPUT_DIR/VERSION"
