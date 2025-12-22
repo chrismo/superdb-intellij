@@ -135,6 +135,7 @@ IP6_NET={IP6}"/"{DIGIT}+
   [Aa][Ll][Ll]                       { return ALL; }
   [Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt]   { return DISTINCT; }
   [Aa][Ss]                           { return AS; }
+  [Aa][Tt]                           { return AT_KW; }
   [Oo][Nn]                           { return ON; }
   [Jj][Oo][Ii][Nn]                   { return JOIN; }
   [Uu][Ss][Ii][Nn][Gg]               { return USING; }
@@ -199,6 +200,7 @@ IP6_NET={IP6}"/"{DIGIT}+
   [Rr][Ee][Nn][Aa][Mm][Ee]           { return RENAME; }
   [Ff][Uu][Ss][Ee]                   { return FUSE; }
   [Ss][Hh][Aa][Pp][Ee][Ss]           { return SHAPES; }
+  [Ss][Hh][Aa][Pp][Ee]               { return SHAPE; }
   [Pp][Aa][Ss][Ss]                   { return PASS; }
   [Ee][Xx][Pp][Ll][Oo][Dd][Ee]       { return EXPLODE; }
   [Mm][Ee][Rr][Gg][Ee]               { return MERGE; }
@@ -228,6 +230,7 @@ IP6_NET={IP6}"/"{DIGIT}+
   // Type Keywords
   [Ee][Rr][Rr][Oo][Rr]               { return ERROR; }
   [Ee][Nn][Uu][Mm]                   { return ENUM; }
+  [Mm][Aa][Pp]                       { return MAP_KW; }
 
   // Primitives Types
   "uint8"                            { return UINT8; }
@@ -250,6 +253,9 @@ IP6_NET={IP6}"/"{DIGIT}+
   "net"                              { return NET_TYPE; }
 
   // PostgreSQL Aliases (case insensitive)
+  // Note: Compound types like "double precision" and "character varying" are not
+  // supported as keywords because they conflict with valid identifiers.
+  // Only single-word PostgreSQL type keywords are supported here.
   [Bb][Ii][Gg][Ii][Nn][Tt]           { return BIGINT; }
   [Bb][Oo][Oo][Ll][Ee][Aa][Nn]       { return BOOLEAN; }
   [Bb][Yy][Tt][Ee][Aa]               { return BYTEA; }

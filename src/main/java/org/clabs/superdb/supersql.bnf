@@ -72,6 +72,7 @@
     ALL = 'ALL'
     DISTINCT = 'DISTINCT'
     AS = 'AS'
+    AT_KW = 'AT'
     ON = 'ON'
     JOIN = 'JOIN'
     USING = 'USING'
@@ -136,6 +137,7 @@
     RENAME = 'RENAME'
     FUSE = 'FUSE'
     SHAPES = 'SHAPES'
+    SHAPE = 'SHAPE'
     PASS = 'PASS'
     EXPLODE = 'EXPLODE'
     MERGE = 'MERGE'
@@ -163,6 +165,7 @@
     // Type Keywords
     ERROR = 'ERROR'
     ENUM = 'ENUM'
+    MAP_KW = 'MAP'
 
     // Primitive Types
     UINT8 = 'uint8'
@@ -185,6 +188,8 @@
     NET_TYPE = 'net'
 
     // PostgreSQL Types
+    // Note: Compound types like "double precision" and "character varying" are not
+    // supported because they conflict with valid identifiers.
     BIGINT = 'BIGINT'
     BOOLEAN = 'BOOLEAN'
     BYTEA = 'BYTEA'
@@ -475,7 +480,7 @@ ordinality_clause ::= WITH ORDINALITY
 into_clause ::= IN scope_body
 
 // Values Operator
-values_op ::= VALUES {pin=1}
+values_op ::= VALUES expr_list? {pin=1}
 
 // Load Operator
 load_op ::= LOAD text_ref commitish_args? {pin=1}

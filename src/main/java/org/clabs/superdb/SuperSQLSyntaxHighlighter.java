@@ -104,6 +104,7 @@ public class SuperSQLSyntaxHighlighter extends SyntaxHighlighterBase {
             tokenType.equals(SuperSQLTypes.ALL) ||
             tokenType.equals(SuperSQLTypes.DISTINCT) ||
             tokenType.equals(SuperSQLTypes.AS) ||
+            tokenType.equals(SuperSQLTypes.AT_KW) ||
             tokenType.equals(SuperSQLTypes.ON) ||
             tokenType.equals(SuperSQLTypes.JOIN) ||
             tokenType.equals(SuperSQLTypes.USING) ||
@@ -165,6 +166,7 @@ public class SuperSQLSyntaxHighlighter extends SyntaxHighlighterBase {
             tokenType.equals(SuperSQLTypes.RENAME) ||
             tokenType.equals(SuperSQLTypes.FUSE) ||
             tokenType.equals(SuperSQLTypes.SHAPES) ||
+            tokenType.equals(SuperSQLTypes.SHAPE) ||
             tokenType.equals(SuperSQLTypes.PASS) ||
             tokenType.equals(SuperSQLTypes.EXPLODE) ||
             tokenType.equals(SuperSQLTypes.MERGE) ||
@@ -219,6 +221,7 @@ public class SuperSQLSyntaxHighlighter extends SyntaxHighlighterBase {
             tokenType.equals(SuperSQLTypes.CIDR) ||
             tokenType.equals(SuperSQLTypes.INTEGER) ||
             tokenType.equals(SuperSQLTypes.INET) ||
+            tokenType.equals(SuperSQLTypes.MAP_KW) ||
             tokenType.equals(SuperSQLTypes.REAL) ||
             tokenType.equals(SuperSQLTypes.SMALLINT) ||
             tokenType.equals(SuperSQLTypes.TEXT) ||
