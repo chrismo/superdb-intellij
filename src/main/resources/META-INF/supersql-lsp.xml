@@ -22,9 +22,10 @@
         <languageMapping language="SuperSQL"
                          serverId="supersql-lsp"/>
 
-        <!-- File pattern mapping (backup if language mapping doesn't work) -->
-        <fileTypeMapping patterns="*.spq"
-                         serverId="supersql-lsp"/>
+        <!-- File type mapping with languageId for LSP -->
+        <fileTypeMapping fileType="SuperSQL Query File"
+                         serverId="supersql-lsp"
+                         languageId="supersql"/>
     </extensions>
 
     <!-- Application-level services -->
