@@ -1,6 +1,8 @@
 I NEED YOU TO USE THE TOOLS YOU HAVE AVAILABLE TO YOU. DO NOT IMPROVISE NEW
 BASH SCRIPTS.
 
+Use gh instead of curl! # 'feels' safer, prolly isn't?
+
 For anything with SuperDB, use ./scripts/claude-superdb-test.sh and refer to
 https://raw.githubusercontent.com/chrismo/superkit/refs/heads/main/doc/superdb-expert.md
 for how to use `super` and compose commands/queries.

@@ -7,7 +7,12 @@
       "Bash(./scripts/claude-superdb-test.sh:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(gh api:*)",
+      "Bash(git push)",
+      "Bash(LSP_REPO=chrismo/superdb-syntaxes bash -x scripts/download-all-platforms.sh latest)",
+      "Bash(./scripts/download-all-platforms.sh:*)"
     ]
   },
   "hooks": {
