@@ -1,8 +1,6 @@
 package org.clabs.superdb;
 
 import com.intellij.testFramework.ParsingTestCase;
-import org.junit.Ignore;
-
 /**
  * Parser tests for SuperSQL.
  * Uses IntelliJ's ParsingTestCase which compares parsed PSI trees
@@ -12,10 +10,9 @@ import org.junit.Ignore;
  * - testData/parser/Xxx.spq (input)
  * - testData/parser/Xxx.txt (expected PSI tree)
  *
- * TODO: Generate expected output files (.txt) by running tests locally with
+ * To regenerate expected output files (.txt), run tests with:
  * -Didea.tests.overwrite.data=true
  */
-@Ignore("Parser tests require expected output files which need to be generated")
 public class SuperSQLParserTest extends ParsingTestCase {
 
     public SuperSQLParserTest() {
@@ -56,6 +53,18 @@ public class SuperSQLParserTest extends ParsingTestCase {
     }
 
     public void testSelectWithJoin() {
+        doTest(true);
+    }
+
+    public void testJoinUsing() {
+        doTest(true);
+    }
+
+    public void testRecursiveCTE() {
+        doTest(true);
+    }
+
+    public void testUnnestOrdinality() {
         doTest(true);
     }
 

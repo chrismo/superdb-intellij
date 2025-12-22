@@ -141,6 +141,8 @@ tasks.test {
         events("passed", "skipped", "failed")
         showStandardStreams = true
     }
+    // Fork a new JVM for each test class to ensure isolation
+    forkEvery = 1
     // Ensure tests run after code generation
     dependsOn("generateLexer", "generateParser")
 }

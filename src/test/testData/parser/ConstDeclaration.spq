@@ -1,2 +1,5 @@
-const MAX_RESULTS = 100
-const PI = 3.14159
+const MAX_RESULTS =100
+const PI= 3.14159
+const ANSWER=42
+const quesTIon  =   'hey, wha happen?'
+values MAX_RESULTS, PI, quesTIon, ANSWER

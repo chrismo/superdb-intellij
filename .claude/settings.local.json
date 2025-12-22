@@ -3,7 +3,11 @@
     "allow": [
       "Bash(./gradlew runIde:*)",
       "Bash(./gradlew:*)",
-      "Bash(./scripts/analyze-tests.sh:*)"
+      "Bash(./scripts/analyze-tests.sh:*)",
+      "Bash(./scripts/claude-superdb-test.sh:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
