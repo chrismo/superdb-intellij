@@ -17,14 +17,14 @@ Use `gh api` (not curl) to fetch files from brimdata/super main branch:
 | `compiler/parser/parser.peg` | Language syntax | Keywords, operators, types |
 | `runtime/sam/expr/function/function.go` | Scalar functions | Built-in function names (not in grammar) |
 | `runtime/sam/expr/agg/agg.go` | Aggregate functions | Aggregate function names (count, sum, avg, etc.) |
-| `compiler/parser/valid.spq` | Test examples | Canonical valid SuperSQL queries |
+
+**Note:** Do NOT use `compiler/parser/valid.spq` - it's not reliably maintained and contains stale syntax.
 
 Fetch each file:
 ```bash
 gh api repos/brimdata/super/contents/compiler/parser/parser.peg --jq '.content' | base64 -d
 gh api repos/brimdata/super/contents/runtime/sam/expr/function/function.go --jq '.content' | base64 -d
 gh api repos/brimdata/super/contents/runtime/sam/expr/agg/agg.go --jq '.content' | base64 -d
-gh api repos/brimdata/super/contents/compiler/parser/valid.spq --jq '.content' | base64 -d
 ```
 
 Get the latest commit info:
