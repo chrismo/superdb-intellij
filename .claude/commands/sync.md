@@ -1,128 +1,212 @@
 # Sync SuperSQL Grammar
 
-Synchronize this IntelliJ plugin's grammar with the latest SuperSQL from brimdata/super.
+Fully automated synchronization of this IntelliJ plugin's grammar with the latest SuperSQL from brimdata/super.
 
-## Prerequisites
+**This command runs end-to-end automatically. No user confirmation required.**
 
-The `super` binary is required for validating test files:
+## Execution Plan
 
-```bash
-# Install via asdf
-asdf plugin add superdb https://github.com/chrismo/asdf-superdb.git
-asdf install superdb latest
-asdf global superdb latest
+Execute ALL steps below in sequence. Do NOT stop for confirmation. Fix any issues encountered automatically.
 
-# Verify
-super --version
-```
+### Phase 1: Fetch Upstream
 
-## Instructions
+1. Fetch the upstream PEG grammar:
+   - URL: `https://raw.githubusercontent.com/brimdata/super/main/compiler/parser/parser.peg`
+   - Download the complete file content
 
-### Step 1: Fetch Upstream Grammar
+2. Fetch the upstream valid examples:
+   - URL: `https://raw.githubusercontent.com/brimdata/super/main/compiler/parser/valid.spq`
+   - These are canonical valid SuperSQL queries
 
-1. Fetch PEG grammar: `https://raw.githubusercontent.com/brimdata/super/main/compiler/parser/parser.peg`
-2. Fetch valid examples: `https://raw.githubusercontent.com/brimdata/super/main/compiler/parser/valid.spq`
+3. Get the latest commit hash from upstream:
+   - Use: `curl -sI https://api.github.com/repos/brimdata/super/commits/main | grep etag` or similar
+   - Or fetch from: `https://api.github.com/repos/brimdata/super/commits/main`
 
-### Step 2: Analyze Drift
+### Phase 2: Analyze Current Implementation
 
-Read current implementation:
+Read ALL of these files to understand current state:
 - `src/main/java/org/clabs/superdb/SuperSQL.flex` (lexer)
 - `src/main/java/org/clabs/superdb/supersql.bnf` (grammar)
 - `src/main/java/org/clabs/superdb/SuperSQLSyntaxHighlighter.java`
 
-Compare and identify:
-- **Missing tokens**: In upstream but not in our lexer
-- **Extra tokens**: In our lexer but not in upstream
-- **Changed patterns**: Tokens with different syntax
+### Phase 3: Identify Drift
 
-### Step 3: Validate Test Files
+Compare upstream PEG grammar with our implementation. Identify:
+- **Missing tokens**: Keywords/operators in upstream but not in our lexer
+- **Extra tokens**: In our lexer but removed from upstream
+- **Changed patterns**: Tokens with different syntax or semantics
+- **New operators**: Pipe operators added upstream
+- **New types**: Primitive or PostgreSQL types added
 
-Run `./scripts/validate-test-files.sh` to check test files against real SuperDB parser.
+### Phase 4: Update Lexer (SuperSQL.flex)
 
-Use `./scripts/claude-superdb-test.sh` to test individual files. See `.claude/commands/use-tools.md` for usage examples.
+For EACH missing or changed token:
+1. Add the token pattern to the lexer
+2. Use case-insensitive patterns for keywords: `[Kk][Ee][Yy][Ww][Oo][Rr][Dd]`
+3. Ensure proper ordering (longer matches before shorter)
+4. Return the appropriate token type
 
-### Step 4: Report Before Changes
+For removed tokens:
+- Remove from lexer (but check if still used elsewhere first)
 
-Provide a drift report:
+### Phase 5: Update Grammar (supersql.bnf)
 
-```
-## Grammar Drift Report
+1. Add new tokens to the `tokens = [...]` block
+2. Update grammar rules to use new tokens
+3. Add `{pin=N}` attributes for error recovery where appropriate
+4. Ensure grammar rules match upstream semantics
 
-### Status: [IN SYNC | OUT OF SYNC]
+### Phase 6: Update Syntax Highlighter
 
-### Missing Tokens (need to add)
-- TOKEN_NAME: description
+In `SuperSQLSyntaxHighlighter.java`:
+- Add new tokens to appropriate categories:
+  - `KEYWORD_KEYS` - SQL keywords (SELECT, FROM, WHERE, etc.)
+  - `OPERATOR_KEYWORD_KEYS` - Pipe operators (FORK, SWITCH, SORT, etc.)
+  - `TYPE_KEYWORD_KEYS` - Type names (uint8, string, etc.)
+  - `CONSTANT_KEYS` - Constants (TRUE, FALSE, NULL, NaN, Inf)
 
-### Removed Tokens (may need to remove)
-- TOKEN_NAME: description
+### Phase 7: Generate Lexer and Parser
 
-### Changed Syntax
-- TOKEN_NAME: old_pattern → new_pattern
-
-### Test File Validation
-- Passed: N files
-- Failed: N files (list with errors)
-
-### Recommendation
-[Summary of changes needed]
-```
-
-**Stop here and confirm with user before making changes.**
-
-### Step 5: Update Lexer (SuperSQL.flex)
-
-For each new token:
-1. Add token pattern (case-insensitive for keywords: `[Kk][Ee][Yy]`)
-2. Ensure proper ordering (longer matches first)
-3. Return appropriate token type
-
-### Step 6: Update Grammar (supersql.bnf)
-
-1. Add new tokens to `tokens = [...]` block
-2. Update grammar rules
-3. Add `{pin=N}` for error recovery where appropriate
-
-### Step 7: Update Syntax Highlighter
-
-In `SuperSQLSyntaxHighlighter.java`, add tokens to appropriate categories:
-- `KEYWORD_KEYS` - SQL keywords
-- `OPERATOR_KEYWORD_KEYS` - pipe operators
-- `TYPE_KEYWORD_KEYS` - type names
-
-### Step 8: Update Tests
-
-1. **Lexer tests** (`SuperSQLLexerTest.java`): Add/update token tests
-2. **Parser test data** (`src/test/testData/parser/`): Add/fix .spq files
-3. **Validate**: Run `./scripts/validate-test-files.sh` again
-4. **Regenerate expected outputs**: `./gradlew test -Didea.tests.overwrite.data=true`
-
-### Step 9: Update Examples
-
-Update `examples/*.spq` with new syntax demonstrations.
-
-### Step 10: Verify Build
-
+Run:
 ```bash
 ./gradlew generateLexer generateParser
+```
+
+If this fails, fix the errors in .flex or .bnf files and retry.
+
+### Phase 8: Build
+
+Run:
+```bash
 ./gradlew build
+```
+
+If build fails:
+- Read the error messages
+- Fix compilation errors in generated or source files
+- Retry until build succeeds
+
+### Phase 9: Run Tests
+
+Run:
+```bash
 ./gradlew test
 ```
 
-### Step 11: Commit
+If tests fail:
+1. Read the test failure output
+2. For parser test failures:
+   - Check if the test input is valid SuperSQL
+   - Fix the grammar if the input should parse
+   - Fix the test file if the input is invalid
+3. For lexer test failures:
+   - Update expected tokens in test assertions
+4. For other failures:
+   - Fix the underlying issue
 
+### Phase 10: Regenerate Test Expected Outputs
+
+After fixing any test issues, regenerate expected outputs:
+```bash
+./gradlew test -Didea.tests.overwrite.data=true
 ```
-Sync grammar with brimdata/super@<commit-hash>
+
+Then run tests again to confirm:
+```bash
+./gradlew test
+```
+
+Repeat until ALL tests pass.
+
+### Phase 11: Validate Against SuperDB (if available)
+
+If `super` binary is available:
+```bash
+./scripts/validate-test-files.sh
+```
+
+If validation fails for any test file:
+1. Check if the syntax is valid upstream
+2. Fix the test file OR fix our grammar
+3. Retry validation
+
+Skip this step if `super` is not installed.
+
+### Phase 12: Update Examples
+
+Review and update `examples/*.spq` files if new syntax was added.
+
+### Phase 13: Final Verification
+
+Run the complete build and test cycle one more time:
+```bash
+./gradlew clean build test
+```
+
+This MUST pass before committing.
+
+### Phase 14: Commit
+
+Create a commit with:
+```bash
+git add -A
+git commit -m "$(cat <<'EOF'
+Sync grammar with brimdata/super
 
 Changes:
-- Added: <list>
-- Removed: <list>
-- Modified: <list>
+- [List all tokens/operators added]
+- [List all tokens/operators removed]
+- [List all syntax changes]
+- [List all bug fixes made]
 
-Upstream: https://github.com/brimdata/super/commit/<hash>
+Upstream: https://github.com/brimdata/super
+EOF
+)"
 ```
 
-## Notes
+### Phase 15: Push
 
-- Don't break existing functionality
-- Test thoroughly - grammar changes cascade
-- Check brimdata/super CHANGELOG for context
+Push to the current branch:
+```bash
+git push -u origin <current-branch>
+```
+
+If push fails due to network, retry up to 4 times with exponential backoff.
+
+## Error Handling
+
+- If ANY step fails, diagnose and fix the issue automatically
+- Do NOT ask for user input - make reasonable decisions
+- If a fix requires architectural changes, make them
+- If stuck in a loop (same error 3+ times), try a different approach
+- Log what you're doing so the user can review afterward
+
+## Success Criteria
+
+The sync is complete when:
+1. All grammar changes from upstream are incorporated
+2. `./gradlew clean build test` passes
+3. Changes are committed and pushed
+4. A summary of changes is provided to the user
+
+## Output
+
+After completion, provide a summary:
+```
+## Sync Complete
+
+### Changes Made
+- Added tokens: X, Y, Z
+- Removed tokens: A, B
+- Updated rules: ...
+- Fixed bugs: ...
+
+### Test Results
+- All tests passing: Yes/No
+- Tests added/modified: N
+
+### Commit
+- Hash: <commit-hash>
+- Branch: <branch-name>
+- Pushed: Yes/No
+```
