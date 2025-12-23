@@ -1,0 +1,15 @@
+-- Subqueries: in FROM, as array, with EXISTS
+
+-- Subquery in FROM clause
+SELECT
+    region,
+    avg(total_sales) AS avg_regional_sales
+FROM (
+    SELECT
+        region,
+        customer_id,
+        sum(amount) AS total_sales
+    FROM sales
+    GROUP BY region, customer_id
+) AS customer_totals
+GROUP BY region

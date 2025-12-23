@@ -1,0 +1,7 @@
+-- EXISTS subquery (non-correlated)
+
+SELECT *
+FROM (values {id:1, name:"Alice"}, {id:2, name:"Bob"})
+WHERE EXISTS (
+    SELECT 1 FROM (values {order_id:100})
+)

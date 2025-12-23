@@ -1,0 +1,14 @@
+-- Special literals: IP, duration, timestamp, bytes, etc.
+
+SELECT
+    192.168.1.1 AS ipv4_addr,
+    ::1 AS ipv6_local,
+    10.0.0.0/8 AS network,
+    1.5h AS duration_val,
+    2024-01-15T10:30:00Z AS timestamp_val,
+    0x1a2b3c AS bytes_val,
+    true AS bool_val,
+    null AS null_val,
+    NaN AS nan_val,
+    +Inf AS pos_inf
+FROM dual

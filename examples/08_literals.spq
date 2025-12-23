@@ -1,0 +1,10 @@
+-- Record, Array, Set, and Map literals
+
+-- Record literal
+{
+    name: "John Doe",
+    age: 30,
+    email: "john@example.com",
+    tags: ["admin", "active"],
+    metadata: |{"role": "admin", "dept": "engineering"}|
+}

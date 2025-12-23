@@ -159,4 +159,58 @@ public class SuperSQLParserTest extends ParsingTestCase {
     public void testMissingParenthesis() {
         doTest(true);
     }
+
+    public void testMultipleDeclarations() {
+        doTest(true);
+    }
+
+    public void testTypeWithKeywordField() {
+        doTest(true);
+    }
+
+    public void testTypeThenSelect() {
+        doTest(true);
+    }
+
+    public void testStandaloneSelect() {
+        doTest(true);
+    }
+
+    public void testTypeCasting() {
+        doTest(true);
+    }
+
+    public void testCastFunction() {
+        doTest(true);
+    }
+
+    public void testIsNull() {
+        doTest(true);
+    }
+
+    public void testSortReverse() {
+        doTest(true);
+    }
+
+    public void testMultiStatement() {
+        doTest(true);
+    }
+
+    public void testSwitchExample() {
+        doTest(true);
+    }
+
+    // === Troubleshooting Tests ===
+
+    public void testSwitch05() {
+        doTest(true);
+    }
+
+    public void testExists16() {
+        doTest(true);
+    }
+
+    public void testBasicInclude() {
+        doTest(true);
+    }
 }

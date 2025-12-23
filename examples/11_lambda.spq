@@ -1,0 +1,4 @@
+-- Lambda expressions in function calls
+
+FROM data
+| put doubled := (lambda x: x * 2)(value)

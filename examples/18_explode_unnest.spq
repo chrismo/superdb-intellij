@@ -1,0 +1,7 @@
+-- Explode and Unnest operators
+
+-- Explode array into rows
+FROM events
+| explode tags by string as tag
+| count() by tag
+| sort -r count

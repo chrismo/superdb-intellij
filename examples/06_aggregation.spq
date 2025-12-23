@@ -1,0 +1,8 @@
+-- Aggregation with WHERE clause and grouping
+
+summarize
+    total := sum(amount),
+    avg_amount := avg(amount) where amount > 0,
+    user_count := count(distinct user_id)
+by region, category
+with -limit 1000

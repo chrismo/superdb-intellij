@@ -1,0 +1,14 @@
+-- Simple SELECT query with GROUP BY, HAVING, ORDER BY, LIMIT
+
+const MAX_RESULTS = 100
+
+SELECT
+    user_id,
+    event_type,
+    count(*) AS event_count
+FROM events
+WHERE timestamp >= 2024-01-01T00:00:00Z
+GROUP BY user_id, event_type
+HAVING event_count > 10
+ORDER BY event_count DESC
+LIMIT MAX_RESULTS

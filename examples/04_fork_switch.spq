@@ -1,0 +1,11 @@
+-- Fork and Switch operators
+
+-- Fork for parallel processing
+FROM events
+| fork (
+    -- Branch 1: Count by type
+    count() by event_type
+  ) (
+    -- Branch 2: Get unique users
+    distinct user_id
+  )

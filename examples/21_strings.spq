@@ -1,0 +1,5 @@
+-- String functions and f-strings
+
+-- Formatted strings (f-strings)
+FROM logs
+| put formatted := f"User {user_id} performed {action} at {timestamp}"

@@ -1,0 +1,11 @@
+-- Query declaration with let
+
+let active_sessions = (
+    FROM sessions
+    | where end_time is null
+    | where start_time >= 2024-01-01T00:00:00Z
+)
+
+FROM active_sessions
+| count() by user_id
+| top 10

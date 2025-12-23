@@ -9,7 +9,21 @@ plugins {
 }
 
 group = "org.clabs"
-version = "1.0-SNAPSHOT"
+
+// Versioning scheme: <superdb-version>.<plugin-release>
+//
+// The first two parts mirror the SuperDB version this plugin is built against.
+// The third part is the plugin-specific release number, starting at 0.
+//
+// Pre-release era (current):
+//   SuperDB uses 0.5MMDD (e.g., 0.51222 for Dec 22, 2025)
+//   Plugin: 0.51222.0, 0.51222.1, etc.
+//
+// Post-release era (when SuperDB ships 1.0+):
+//   SuperDB uses standard semver (e.g., 1.0.0, 1.1.0)
+//   Plugin: 1.0.0.0, 1.0.0.1, etc. (four parts: major.minor.patch.plugin-release)
+//
+version = "0.51222.0"
 
 repositories {
     mavenCentral()
@@ -147,6 +161,12 @@ tasks.test {
     dependsOn("generateLexer", "generateParser")
     // Pass system properties for test data regeneration
     systemProperty("idea.tests.overwrite.data", System.getProperty("idea.tests.overwrite.data") ?: "false")
+}
+
+// Exclude LSP4IJ from test sandbox - it can't handle IntelliJ's in-memory TempFileSystem
+// See: https://platform.jetbrains.com/t/how-to-make-configurebyfile-write-files-to-disk/2309
+tasks.prepareTestingSandbox {
+    pluginDependencies.set(emptyList())
 }
 
 // LSP Configuration

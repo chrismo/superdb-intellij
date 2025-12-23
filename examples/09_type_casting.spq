@@ -1,0 +1,7 @@
+-- Type casting with :: and CAST()
+
+SELECT
+    user_id::string,
+    score::float64,
+    CAST(timestamp AS date)
+FROM users

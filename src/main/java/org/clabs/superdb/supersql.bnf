@@ -97,6 +97,7 @@
     CAST = 'CAST'
     EXTRACT = 'EXTRACT'
     SUBSTRING = 'SUBSTRING'
+    POSITION = 'POSITION'
     DATE_KW = 'DATE'
     TIMESTAMP_KW = 'TIMESTAMP'
     INTERVAL = 'INTERVAL'
@@ -232,7 +233,12 @@
 superSqlFile ::= query_item*
 
 private query_item ::= declaration | pipe_sequence | SEMICOLON {recoverWhile=query_item_recover}
-private query_item_recover ::= !(SEMICOLON | declaration_keyword | IDENTIFIER | LPAREN)
+private query_item_recover ::= !(SEMICOLON | declaration_keyword | statement_start_keyword | IDENTIFIER | LPAREN)
+
+// Keywords that can start a new statement (for error recovery)
+private statement_start_keyword ::= SELECT | FROM | WITH | FORK | SWITCH | SEARCH | ASSERT
+                                  | SORT | TOP | CUT | DROP | HEAD | TAIL | PUT | RENAME
+                                  | SUMMARIZE | AGGREGATE | VALUES | LOAD | OUTPUT | DEBUG
 
 private declaration_keyword ::= CONST | FN | LET | OP | PRAGMA | TYPE_KW
 
@@ -378,7 +384,10 @@ values_list ::= LPAREN expr_list RPAREN (COMMA LPAREN expr_list RPAREN)*
 fork_op ::= FORK scope_body+ {pin=1}
 
 // Switch Operator
-switch_op ::= SWITCH expr? switch_case+ {pin=1}
+// Cases can optionally be wrapped in outer parentheses
+switch_op ::= SWITCH expr? switch_cases {pin=1}
+
+private switch_cases ::= LPAREN switch_case+ RPAREN | switch_case+
 
 switch_case ::= case_label scope_body
 
@@ -454,12 +463,14 @@ shapes_op ::= SHAPES lval? {pin=1}
 // From Operator
 from_op ::= FROM from_item {pin=1}
 
-from_item ::= from_source commitish_args?
+from_item ::= (LPAREN query_body RPAREN | from_source) alias? commitish_args?
 
-commitish_args ::= AT text_ref meta_ref?
+commitish_args ::= AT commitish_ref meta_ref?
                  | meta_ref
 
-meta_ref ::= COLON text_ref
+commitish_ref ::= text_ref | IDENTIFIER
+
+meta_ref ::= COLON commitish_ref
 
 // Pass Operator
 pass_op ::= PASS {pin=1}
@@ -483,7 +494,9 @@ into_clause ::= IN scope_body
 values_op ::= VALUES expr_list? {pin=1}
 
 // Load Operator
-load_op ::= LOAD text_ref commitish_args? {pin=1}
+load_op ::= LOAD load_source commitish_args? {pin=1}
+
+load_source ::= text_ref | glob_pattern
 
 // Output Operator
 output_op ::= OUTPUT IDENTIFIER {pin=1}
@@ -515,7 +528,8 @@ agg_func ::= IDENTIFIER LPAREN (ALL | DISTINCT)? expr? RPAREN
 
 group_clause ::= GROUP? BY assignment_list
 
-limit_arg ::= WITH MINUS IDENTIFIER expr
+// The option name after - can be LIMIT or other identifiers
+limit_arg ::= WITH MINUS (IDENTIFIER | LIMIT) expr
 
 // === Assignment ===
 assignment_op ::= assignment_list
@@ -539,10 +553,12 @@ not_expr ::= (NOT | BANG)? between_expr
 
 between_expr ::= comparison_expr (NOT? BETWEEN comparison_expr AND comparison_expr)?
 
-comparison_expr ::= additive_expr (comparator additive_expr)?
-                  | additive_expr IS NOT? NULL
-                  | additive_expr NOT? IN (LPAREN expr_list RPAREN | subquery_expr)
-                  | additive_expr NOT? LIKE additive_expr
+comparison_expr ::= additive_expr comparison_tail?
+
+private comparison_tail ::= comparator additive_expr
+                          | IS NOT? NULL
+                          | NOT? IN (LPAREN expr_list RPAREN | subquery_expr)
+                          | NOT? LIKE additive_expr
 
 private comparator ::= EQ | NEQ | LT | GT | LE | GE | MATCH | EQUALS
 
@@ -564,13 +580,13 @@ slice_expr ::= expr? COLON expr?
 
 primary_expr ::= case_expr
                | record_expr
+               | subquery_expr
                | array_expr
                | set_expr
                | map_expr
                | sql_time_expr
                | function_call
                | lambda_expr
-               | subquery_expr
                | tuple_expr
                | type_literal
                | literal
@@ -581,7 +597,10 @@ paren_expr ::= LPAREN expr RPAREN
 
 // Left-factored to handle both plain identifiers and function calls
 // This ensures IDENTIFIER is matched first, then optionally followed by (args)
-id_or_call ::= IDENTIFIER (LPAREN func_args? RPAREN where_clause?)?
+// Allow keywords to be used as identifiers in expression context (column names, etc.)
+id_or_call ::= name_or_keyword (LPAREN func_args? RPAREN where_clause?)?
+
+private name_or_keyword ::= IDENTIFIER | keyword_as_name
 
 // Keep id_expr for backward compatibility in other rules
 id_expr ::= IDENTIFIER
@@ -605,11 +624,22 @@ type_literal ::= LT type_expr GT
 
 // === Function Calls ===
 // Lambda calls and SQL builtin functions (IDENTIFIER calls handled by id_or_call)
+// COUNT is a special keyword that can also be used as a function
 function_call ::= lambda_expr LPAREN func_args? RPAREN where_clause?
-                | EXTRACT LPAREN expr FROM expr RPAREN
-                | EXISTS LPAREN query_body RPAREN
-                | CAST LPAREN expr AS type_expr RPAREN
-                | SUBSTRING LPAREN expr (FROM expr)? (FOR expr)? RPAREN
+                | cast_function
+                | extract_function
+                | exists_function
+                | substring_function
+                | position_function
+                | count_function
+
+cast_function ::= CAST LPAREN expr AS type_expr RPAREN {pin=1}
+extract_function ::= EXTRACT LPAREN expr FROM expr RPAREN {pin=1}
+exists_function ::= EXISTS LPAREN query_body RPAREN {pin=1}
+substring_function ::= SUBSTRING LPAREN expr (FROM expr)? (FOR expr)? RPAREN {pin=1}
+position_function ::= POSITION LPAREN expr IN expr RPAREN {pin=1}
+// No pin on count_function to allow COUNT to be used as identifier when not followed by (
+count_function ::= COUNT LPAREN (ALL | DISTINCT)? (STAR | expr)? RPAREN
 
 call_expr ::= IDENTIFIER func_args?
 
@@ -665,7 +695,7 @@ spread_elem ::= SPREAD expr {pin=1}
 
 field_elem ::= field_name COLON expr {pin=2}
 
-field_name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
+field_name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING | keyword_as_name
 
 expr_elem ::= expr
 
@@ -684,9 +714,8 @@ map_entry_list ::= map_entry (COMMA map_entry)*
 map_entry ::= expr COLON expr {pin=2}
 
 // === Types ===
-type_expr ::= type_union | component_type
-
-type_union ::= component_type (PIPE component_type)+
+// Type expressions can be a single type or a union of types (separated by |)
+type_expr ::= component_type (PIPE component_type)*
 
 component_type ::= primitive_type
                  | error_type
@@ -709,6 +738,7 @@ primitive_type ::= UINT8 | UINT16 | UINT32 | UINT64
 
 private postgres_type ::= BIGINT | BOOLEAN | BYTEA | CHAR | CIDR
                         | INTEGER | INET | REAL | SMALLINT | TEXT | VARCHAR
+                        | DATE_KW | TIMESTAMP_KW | INTERVAL
 
 error_type ::= ERROR LPAREN type_expr RPAREN {pin=1}
 
@@ -716,7 +746,19 @@ enum_type ::= ENUM LPAREN simple_name_list RPAREN {pin=1}
 
 simple_name_list ::= simple_name (COMMA simple_name)*
 
-simple_name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
+// Keywords can be used as names in certain contexts (field names, type field names)
+simple_name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING | keyword_as_name
+
+// Keywords that can safely be used as identifiers (column names, field names).
+// EXCLUDES syntax keywords like CASE/WHEN/THEN/ELSE/END, AND/OR/NOT, etc.
+// that would cause parsing ambiguity in expressions.
+private keyword_as_name ::= VALUE | VALUES | DATE_KW | TIMESTAMP_KW | INTERVAL
+                          | ASC | DESC | NULLS | FIRST | LAST
+                          | HEAD | TAIL | TOP | SORT | CUT | DROP | PUT | RENAME
+                          | FUSE | SHAPES | SHAPE | PASS | EXPLODE | MERGE | UNNEST
+                          | LOAD | OUTPUT | DEBUG | CALL | COUNT
+                          | TYPE_KW | ERROR | ENUM | MAP_KW
+                          | AGGREGATE | SUMMARIZE | DEFAULT
 
 record_type ::= LBRACE type_field_list? RBRACE
 

@@ -69,7 +69,13 @@ TIMESTAMP={DATE}"T"{TIME_PART}{TIME_OFFSET}
 IP4={DIGIT}+"."{DIGIT}+"."{DIGIT}+"."{DIGIT}+
 IP4_NET={IP4}"/"{DIGIT}+
 IP6_PART={HEX_DIGIT}+
-IP6=({IP6_PART}":")+{IP6_PART}|"::"({IP6_PART}":")*{IP6_PART}?|({IP6_PART}":")+"::"({IP6_PART}":")*{IP6_PART}?
+// IPv6: require at least one colon-separated pair, or :: with at least one colon-part following
+// This prevents ::f from matching (would conflict with :: cast operator + float64)
+IP6_FULL=({IP6_PART}":")+{IP6_PART}
+IP6_COMPRESSED_START="::"{IP6_PART}(":"{IP6_PART})+
+IP6_COMPRESSED_END=({IP6_PART}":")+"::"({IP6_PART}(":"{IP6_PART})*)?
+IP6_LOOPBACK="::1"
+IP6={IP6_FULL}|{IP6_COMPRESSED_START}|{IP6_COMPRESSED_END}|{IP6_LOOPBACK}
 IP6_NET={IP6}"/"{DIGIT}+
 
 %state STRING_STATE
@@ -160,6 +166,7 @@ IP6_NET={IP6}"/"{DIGIT}+
   [Cc][Aa][Ss][Tt]                   { return CAST; }
   [Ee][Xx][Tt][Rr][Aa][Cc][Tt]       { return EXTRACT; }
   [Ss][Uu][Bb][Ss][Tt][Rr][Ii][Nn][Gg] { return SUBSTRING; }
+  [Pp][Oo][Ss][Ii][Tt][Ii][Oo][Nn]   { return POSITION; }
   [Dd][Aa][Tt][Ee]                   { return DATE_KW; }
   [Tt][Ii][Mm][Ee][Ss][Tt][Aa][Mm][Pp] { return TIMESTAMP_KW; }
   [Ii][Nn][Tt][Ee][Rr][Vv][Aa][Ll]   { return INTERVAL; }

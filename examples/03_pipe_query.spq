@@ -1,0 +1,12 @@
+-- Pipe-based query with operators
+
+FROM data.log
+| where level == "error" OR level == "warning"
+| sort -r timestamp
+| head 50
+| put severity := CASE
+    WHEN level == "error" THEN "high"
+    WHEN level == "warning" THEN "medium"
+    ELSE "low"
+  END
+| SELECT timestamp, message, severity

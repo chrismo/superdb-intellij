@@ -1,0 +1,6 @@
+-- Array subquery
+
+SELECT
+    user_id,
+    [SELECT order_id FROM orders WHERE orders.user_id == users.user_id] AS order_ids
+FROM users

@@ -1,0 +1,5 @@
+-- Comment
+const MAX = 100
+
+fn double(x): x * 2
+fn triple(x): x * 3

@@ -1,0 +1,7 @@
+-- Unnest nested structures
+
+FROM documents
+| unnest sections into (
+    put section_title := this.title
+    | put section_content := this.body
+  )

@@ -1,0 +1,4 @@
+type Event = {
+    timestamp: time,
+    value: int64
+}

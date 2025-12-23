@@ -1,0 +1,19 @@
+-- Type declarations: union, error, enum
+
+-- Type union handling
+type Response = {
+    status: int32,
+    body: string | null | error(string)
+}
+
+-- Error type usage
+type SafeResult = int64 | error({
+    code: int32,
+    message: string
+})
+
+-- Enum type
+type Status = enum("pending", "active", "completed", "cancelled")
+
+-- Use the types
+values <Response>

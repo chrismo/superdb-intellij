@@ -34,10 +34,18 @@ function build() {
   ./gradlew clean build
 }
 
+function _copy_examples() {
+  local dest="build/test-project"
+  mkdir -p "$dest"
+  cp -r examples/* "$dest/"
+  echo "    Copied examples to $dest"
+}
+
 function ide() {
   _cd_root
   echo "==> Launching test IDE..."
-  ./gradlew prepareSandbox runIde
+  _copy_examples
+  ./gradlew prepareSandbox runIde --args="$(pwd)/build/test-project"
 }
 
 function dev() {
@@ -45,7 +53,9 @@ function dev() {
   echo "==> Full dev cycle: LSP + build + IDE..."
   lsp
   echo ""
-  ./gradlew clean prepareSandbox runIde
+  ./gradlew clean prepareSandbox
+  _copy_examples
+  ./gradlew runIde --args="$(pwd)/build/test-project"
 }
 
 function test() {

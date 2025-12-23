@@ -1,5 +1,5 @@
-from logs
-| switch level (
+from (values {level:"error"}, {level:"warning"}, {level:"info"})
+| switch level
     case "error" (
       put severity := "high"
     )
@@ -9,4 +9,3 @@ from logs
     default (
       put severity := "low"
     )
-  )

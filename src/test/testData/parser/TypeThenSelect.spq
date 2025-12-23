@@ -1,0 +1,6 @@
+type Event = {
+    id: int64,
+    metadata: |{string: string}|
+}
+
+SELECT id FROM events

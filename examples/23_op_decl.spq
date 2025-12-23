@@ -1,0 +1,10 @@
+-- Operator declaration with op
+
+op filter_errors:
+    (
+        where level == "error"
+        | sort -r timestamp
+    )
+
+FROM logs
+| filter_errors

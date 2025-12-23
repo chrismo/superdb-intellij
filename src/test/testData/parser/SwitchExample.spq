@@ -1,0 +1,11 @@
+FROM (values {level:"error"}, {level:"warning"}, {level:"info"})
+| switch level
+    case "error" (
+      put category := "critical"
+    )
+    case "warning" (
+      put category := "attention"
+    )
+    default (
+      put category := "normal"
+    )

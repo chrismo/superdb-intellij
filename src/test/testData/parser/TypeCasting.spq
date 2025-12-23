@@ -1,0 +1,1 @@
+SELECT score::float64 FROM users

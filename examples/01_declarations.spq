@@ -1,0 +1,18 @@
+-- Declarations: const, fn, type
+-- Demonstrates declaration syntax
+
+const MAX_RESULTS = 100
+const MIN_SCORE = 0.5
+
+fn double(x): x * 2
+fn is_high_priority(score): score >= 0.8
+
+type UserEvent = {
+    user_id: int64,
+    event_type: string,
+    timestamp: time,
+    metadata: |{string: string}|
+}
+
+-- Use the declarations
+values double(21)

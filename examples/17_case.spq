@@ -1,0 +1,16 @@
+-- Complex CASE expressions
+
+SELECT
+    product_id,
+    CASE
+        WHEN inventory > 100 THEN "high"
+        WHEN inventory BETWEEN 20 AND 100 THEN "medium"
+        WHEN inventory > 0 THEN "low"
+        ELSE "out_of_stock"
+    END AS stock_level,
+    CASE category
+        WHEN "electronics" THEN tax_rate * 1.2
+        WHEN "food" THEN tax_rate * 0.5
+        ELSE tax_rate
+    END AS adjusted_tax
+FROM products

@@ -1,0 +1,15 @@
+-- Complex JOIN with multiple tables
+
+SELECT
+    o.order_id,
+    c.customer_name,
+    p.product_name,
+    o.quantity,
+    o.unit_price * o.quantity AS line_total
+FROM orders o
+INNER JOIN customers c ON o.customer_id == c.id
+LEFT JOIN products p ON o.product_id == p.id
+WHERE o.status != "cancelled"
+  AND o.order_date BETWEEN 2024-01-01 AND 2024-12-31
+ORDER BY o.order_date DESC, line_total DESC
+LIMIT 1000 OFFSET 100
