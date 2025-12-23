@@ -17,7 +17,15 @@
       "Bash(super --version:*)",
       "Bash(asdf list:*)",
       "Bash(asdf plugin list:*)",
-      "Bash(./scripts/validate-test-files.sh:*)"
+      "Bash(./scripts/validate-test-files.sh:*)",
+      "WebSearch",
+      "WebFetch(domain:plugins.jetbrains.com)",
+      "WebFetch(domain:www.bashsupport.com)",
+      "WebFetch(domain:www.jetbrains.com)",
+      "Bash(cat:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:blog.jetbrains.com)",
+      "WebFetch(domain:medium.com)"
     ]
   },
   "hooks": {

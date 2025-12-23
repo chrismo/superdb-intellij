@@ -82,4 +82,66 @@ dialect works.
 Citations:
 [1] https://github.com/JetBrains/Grammar-Kit
 
-no-op
+## Planned Features
+
+### Editing & Navigation
+- [ ] Syntax highlighting improvements
+- [ ] Code completion / autocomplete
+- [ ] Go to definition
+- [ ] Find usages / references
+- [ ] Structure view (outline)
+- [ ] Breadcrumbs
+
+### Code Quality
+- [ ] Error highlighting / live validation
+- [ ] Quick fixes / intentions
+- [ ] Code inspections
+
+### Refactoring
+- [ ] Rename refactoring
+- [ ] Extract variable/function
+
+### Formatting
+- [ ] Auto-formatting / code style
+- [ ] Brace matching improvements
+
+### Documentation
+- [ ] Quick documentation popup
+- [ ] Parameter hints
+
+### Language Injection (In Progress)
+
+Enable full SuperDB language support inside strings in shell scripts.
+
+#### BashSupport Pro (Recommended)
+
+[BashSupport Pro](https://www.bashsupport.com/) is required for language injection in shell scripts. It provides:
+
+- **Automatic detection** of `super -c "..."` patterns
+- **Comment-based injection** with `# language=SuperDB`
+- **Manual injection** via right-click → Inject Language → SuperDB
+
+```bash
+# Automatic syntax highlighting for super -c queries!
+super -c "from data.json | where status == 'active' | sort -r timestamp"
+
+# Or use explicit comment annotation:
+# language=SuperDB
+super -c "from data.json | count()"
+```
+
+#### Built-in Shell Plugin
+
+The built-in Shell plugin (`com.intellij.sh`) does **not** support language injection. Its PSI elements don't implement `PsiLanguageInjectionHost`, which is required by IntelliJ's injection framework.
+
+**Status:**
+- [ ] BashSupport Pro automatic detection (in progress)
+- [x] BashSupport Pro comment/manual injection (via IntelliLang)
+- ❌ Built-in Shell plugin (not supported, technical limitation)
+
+**Note:** `zq` command not supported due to syntax divergence from SuperDB.
+
+### Other
+- [ ] Run configurations (execute SuperDB queries from IDE)
+- [ ] File templates
+- [ ] Live templates / snippets

@@ -42,6 +42,11 @@
     <!-- LSP4IJ dependency - optional to allow plugin to work without LSP -->
     <depends optional="true" config-file="supersql-lsp.xml">com.redhat.devtools.lsp4ij</depends>
 
+    <!-- BashSupport Pro for automatic language injection into shell scripts -->
+    <!-- Note: Built-in Shell plugin (com.intellij.sh) doesn't support injection hosts,
+         so users should use # language=SuperSQL comments instead -->
+    <depends optional="true" config-file="supersql-bashpro.xml">pro.bashsupport</depends>
+
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
@@ -50,17 +55,17 @@
                 name="SuperSQL Query File"
                 implementationClass="org.clabs.superdb.SuperSQLQueryFileType"
                 fieldName="INSTANCE"
-                language="SuperSQL"
+                language="SuperDB"
                 extensions="spq"/>
 
         <!-- Parser Definition -->
         <lang.parserDefinition
-                language="SuperSQL"
+                language="SuperDB"
                 implementationClass="org.clabs.superdb.SuperSQLParserDefinition"/>
 
         <!-- Syntax Highlighter -->
         <lang.syntaxHighlighterFactory
-                language="SuperSQL"
+                language="SuperDB"
                 implementationClass="org.clabs.superdb.SuperSQLSyntaxHighlighterFactory"/>
 
         <!-- Color Settings Page -->
@@ -69,27 +74,27 @@
 
         <!-- Brace Matcher -->
         <lang.braceMatcher
-                language="SuperSQL"
+                language="SuperDB"
                 implementationClass="org.clabs.superdb.SuperSQLBraceMatcher"/>
 
         <!-- Commenter -->
         <lang.commenter
-                language="SuperSQL"
+                language="SuperDB"
                 implementationClass="org.clabs.superdb.SuperSQLCommenter"/>
 
         <!-- Code Folding -->
         <lang.foldingBuilder
-                language="SuperSQL"
+                language="SuperDB"
                 implementationClass="org.clabs.superdb.SuperSQLFoldingBuilder"/>
 
         <!-- Quote Handler for auto-completion of quotes -->
         <lang.quoteHandler
-                language="SuperSQL"
+                language="SuperDB"
                 implementationClass="org.clabs.superdb.SuperSQLQuoteHandler"/>
 
         <!-- Annotator for semantic highlighting (built-in functions) -->
         <annotator
-                language="SuperSQL"
+                language="SuperDB"
                 implementationClass="org.clabs.superdb.SuperSQLAnnotator"/>
     </extensions>
 </idea-plugin>

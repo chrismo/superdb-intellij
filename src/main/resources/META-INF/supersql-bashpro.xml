@@ -1,0 +1,8 @@
+<!-- BashSupport Pro plugin extensions for SuperSQL language injection -->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Inject SuperSQL into BashSupport Pro strings following "super -c" pattern -->
+        <multiHostInjector
+                implementation="org.clabs.superdb.injection.SuperSQLBashProInjector"/>
+    </extensions>
+</idea-plugin>

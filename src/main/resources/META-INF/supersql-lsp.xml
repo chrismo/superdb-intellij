@@ -19,7 +19,7 @@
         </server>
 
         <!-- Map SuperSQL language to our LSP server -->
-        <languageMapping language="SuperSQL"
+        <languageMapping language="SuperDB"
                          serverId="supersql-lsp"/>
 
         <!-- File type mapping with languageId for LSP -->

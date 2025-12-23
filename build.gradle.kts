@@ -23,7 +23,36 @@ group = "org.clabs"
 //   SuperDB uses standard semver (e.g., 1.0.0, 1.1.0)
 //   Plugin: 1.0.0.0, 1.0.0.1, etc. (four parts: major.minor.patch.plugin-release)
 //
-version = "0.51222.0"
+// Version is derived from git tags (e.g., v0.51222.0).
+// Use ./build.sh release <version> to create a release tag.
+// Dev builds show: <version>-dev+<commit> or "0.0.0-dev" if no tags exist.
+//
+// Uses providers.exec() for configuration cache compatibility.
+//
+val gitDescribe: Provider<String> = providers.exec {
+    commandLine("git", "describe", "--tags", "--match", "v*", "--always")
+}.standardOutput.asText.map { it.trim() }
+
+val gitVersion: Provider<String> = gitDescribe.map { output ->
+    when {
+        // Exact tag match: v0.51222.0 -> 0.51222.0
+        output.matches(Regex("^v[0-9].*")) && !output.contains("-") ->
+            output.removePrefix("v")
+        // Commits after tag: v0.51222.0-3-gabcdef -> 0.51222.0-dev+abcdef
+        output.matches(Regex("^v[0-9].*-[0-9]+-g[a-f0-9]+$")) -> {
+            val parts = output.split("-")
+            val baseVersion = parts[0].removePrefix("v")
+            val commit = parts.last().removePrefix("g").take(7)
+            "$baseVersion-dev+$commit"
+        }
+        // No tags, just commit hash: abcdef -> 0.0.0-dev+abcdef
+        output.matches(Regex("^[a-f0-9]+$")) ->
+            "0.0.0-dev+${output.take(7)}"
+        else -> "0.0.0-dev"
+    }
+}
+
+version = gitVersion.getOrElse("0.0.0-dev")
 
 repositories {
     mavenCentral()
@@ -107,7 +136,8 @@ intellij {
     version.set(ideVersion)
     type.set("IC") // Target IDE Platform
 
-    // LSP4IJ for Language Server Protocol support
+    // Plugin dependencies:
+    // - LSP4IJ for Language Server Protocol support
     plugins.set(listOf(
         "com.redhat.devtools.lsp4ij:$lsp4ijVersion"
     ))
@@ -125,7 +155,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("241")
-        untilBuild.set("243.*")
+        untilBuild.set("")  // Empty string = no upper bound
     }
 
     signPlugin {
@@ -139,7 +169,7 @@ tasks {
     }
 
     runPluginVerifier {
-        ideVersions.set(listOf("2024.1", "2024.2", "2024.3"))
+        ideVersions.set(listOf("2024.1", "2024.2", "2024.3", "2025.1", "2025.2", "2025.3"))
     }
 }
 
