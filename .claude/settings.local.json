@@ -12,7 +12,12 @@
       "Bash(gh api:*)",
       "Bash(git push)",
       "Bash(LSP_REPO=chrismo/superdb-syntaxes bash -x scripts/download-all-platforms.sh latest)",
-      "Bash(./scripts/download-all-platforms.sh:*)"
+      "Bash(./scripts/download-all-platforms.sh:*)",
+      "Bash(git pull:*)",
+      "Bash(super --version:*)",
+      "Bash(asdf list:*)",
+      "Bash(asdf plugin list:*)",
+      "Bash(./scripts/validate-test-files.sh:*)"
     ]
   },
   "hooks": {
