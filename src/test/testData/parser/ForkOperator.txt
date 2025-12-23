@@ -13,11 +13,11 @@ SuperSQL File(0,71)
       SuperSQLOperatorImpl(OPERATOR)(14,18)
         SuperSQLForkOpImpl(FORK_OP)(14,18)
           PsiElement(SuperSQLTokenType.FORK)('fork')(14,18)
-    PsiErrorElement:'(' unexpected(18,18)
+    PsiErrorElement:SuperSQLTokenType.( expected, got '('(18,18)
       <empty list>
   PsiElement(SuperSQLTokenType.()('(')(19,20)
   PsiElement(SuperSQLTokenType.COUNT)('count')(25,30)
-  PsiErrorElement:'(' unexpected(30,30)
+  PsiErrorElement:SuperSQLTokenType.( expected, got '('(30,30)
     <empty list>
   PsiElement(SuperSQLTokenType.()('(')(30,31)
   PsiElement(SuperSQLTokenType.))(')')(31,32)

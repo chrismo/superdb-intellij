@@ -586,7 +586,7 @@ id_or_call ::= IDENTIFIER (LPAREN func_args? RPAREN where_clause?)?
 // Keep id_expr for backward compatibility in other rules
 id_expr ::= IDENTIFIER
 
-case_expr ::= CASE expr? when_clause+ else_clause? END CASE? {pin=1 recoverWhile=case_recover}
+case_expr ::= CASE expr? when_clause+ else_clause? END CASE? {pin=1}
 
 private case_recover ::= !(END | WHEN | ELSE | RPAREN | PIPE | PIPE_ARROW | SEMICOLON)
 

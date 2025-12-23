@@ -12,5 +12,5 @@ SuperSQL File(0,13)
                     PsiElement(SuperSQLTokenType.*)('*')(7,8)
                 SuperSQLFromClauseImpl(FROM_CLAUSE)(9,13)
                   PsiElement(SuperSQLTokenType.FROM)('FROM')(9,13)
-                  PsiErrorElement:<function call>, <literal>, <sql time expr>, <subquery expr>, <table primary>, SuperSQLTokenType.(, SuperSQLTokenType.<, SuperSQLTokenType.IDENTIFIER, SuperSQLTokenType.LAMBDA, SuperSQLTokenType.[, SuperSQLTokenType.{, SuperSQLTokenType.|[ or SuperSQLTokenType.|{ expected(13,13)
+                  PsiErrorElement:<table primary> expected(13,13)
                     <empty list>

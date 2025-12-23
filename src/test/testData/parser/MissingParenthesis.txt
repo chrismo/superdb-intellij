@@ -1,8 +1,7 @@
 SuperSQL File(0,24)
   PsiElement(SuperSQLTokenType.SELECT)('SELECT')(0,6)
-  PsiElement(SuperSQLTokenType.COUNT)('count')(7,12)
-  PsiErrorElement:'(' unexpected(12,12)
-    <empty list>
+  PsiErrorElement:<select item>, SuperSQLTokenType.ALL or SuperSQLTokenType.DISTINCT expected, got 'count'(7,12)
+    PsiElement(SuperSQLTokenType.COUNT)('count')(7,12)
   PsiElement(SuperSQLTokenType.()('(')(12,13)
   PsiElement(SuperSQLTokenType.FROM)('FROM')(14,18)
   PsiElement(SuperSQLTokenType.IDENTIFIER)('users')(19,24)

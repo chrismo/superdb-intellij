@@ -132,6 +132,24 @@ public class SuperSQLParserTest extends ParsingTestCase {
         doTest(true);
     }
 
+    // === Values Tests ===
+
+    public void testValues1() {
+        doTest(true);
+    }
+
+    public void testBareNumber() {
+        doTest(true);
+    }
+
+    public void testBareIdentifier() {
+        doTest(true);
+    }
+
+    public void testSimpleAddition() {
+        doTest(true);
+    }
+
     // === Error Recovery Tests ===
 
     public void testIncompleteSelect() {
