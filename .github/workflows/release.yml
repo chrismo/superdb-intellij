@@ -51,9 +51,7 @@ jobs:
           java-version: '17'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-home-cache-cleanup: true
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Generate Lexer and Parser
         run: ./gradlew generateLexer generateParser
