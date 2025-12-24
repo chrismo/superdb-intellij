@@ -190,3 +190,45 @@ super -c "from data.json | where type == 'important'"
 - [ ] Run configurations (execute SuperDB queries from IDE)
 - [ ] File templates
 - [ ] Live templates / snippets
+
+## Development
+
+### Building
+
+```bash
+./build.sh compile    # Compile the plugin
+./build.sh test       # Run tests
+./build.sh package    # Build distributable zip
+./build.sh ide        # Launch test IDE sandbox
+```
+
+### Releasing
+
+Releases follow the SuperDB version with a patch number: `0.51222.0` (SuperDB 0.51222, patch 0).
+
+```bash
+# 1. Create release (runs tests, creates tag)
+./build.sh release 0.51222.0
+
+# 2. Push tag to trigger GitHub Actions
+git push --tags
+```
+
+GitHub Actions will:
+- Build the plugin with bundled LSP binaries
+- Run tests and verification
+- Create a GitHub Release with the artifact
+
+### Version Format
+
+- **Pre-release era** (current): `0.5MMDD.patch` (e.g., `0.51222.0`)
+- **Post-release era** (future): `X.Y.Z.patch` (e.g., `1.0.0.0`)
+
+### Utility Commands
+
+```bash
+./build.sh show-ide-versions    # Show configured IDE versions for testing
+./build.sh update-ide-versions  # Auto-update to latest IDE versions
+./build.sh lsp                  # Download latest LSP binaries
+./build.sh install-local        # Install to local IDE (macOS)
+```
