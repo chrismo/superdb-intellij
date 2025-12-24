@@ -29,8 +29,7 @@
       "WebFetch(domain:superdb.org)",
       "Bash(unzip:*)",
       "Bash(gh run list:*)",
-      "Bash(gh run view:*)",
-      "Bash('removeUnusedEntriesOlderThan'\" error.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(gh run view:*)"
     ]
   },
   "hooks": {

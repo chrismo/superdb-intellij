@@ -15,8 +15,8 @@ function usage() {
   echo "  lsp                Download latest LSP binaries"
   echo "  version            Show current version from git tags"
   echo "  sync               Instructions for syncing grammar"
-  echo "  add-ide <ver>      Add IDE version to verifier & CI"
-  echo "  show-ide-versions  Show configured IDE versions"
+  echo "  update-ide-versions  Auto-update verifier IDE versions"
+  echo "  show-ide-versions    Show configured IDE versions"
   echo ""
   echo "Composite commands:"
   echo "  test               compile + run tests"
@@ -239,10 +239,59 @@ function show-ide-versions() {
   echo "==> IDE versions configured for testing:"
   echo ""
   echo "build.gradle.kts (runPluginVerifier):"
-  grep -o '"20[0-9]\{2\}\.[0-9]\+"' build.gradle.kts | tr -d '"' | sed 's/^/    /'
+  grep -oE '"20[0-9]{2}\.[0-9]+\.[0-9]+"' build.gradle.kts | tr -d '"' | sed 's/^/    /'
   echo ""
   echo ".github/workflows/ci.yml (compatibility matrix):"
   grep -E "^\s+- '20[0-9]{2}\.[0-9]+'" .github/workflows/ci.yml | sed "s/.*'\(.*\)'.*/    \1/"
+}
+
+function update-ide-versions() {
+  _cd_root
+  echo "==> Updating IDE versions for plugin verifier..."
+
+  # Fetch fresh release data
+  ./gradlew downloadIdeaProductReleasesXml --quiet 2>/dev/null
+
+  local xml_file="build/tmp/downloadIdeaProductReleasesXml/idea_product_releases.xml"
+  if [ ! -f "$xml_file" ]; then
+    echo "Error: Could not fetch IDE releases XML"
+    exit 1
+  fi
+
+  # Extract all IC versions from 2024 onwards (matching sinceBuild=241)
+  local versions
+  versions=$(grep -A500 '<code>IC</code>' "$xml_file" | grep -oE 'version="202[4-9][^"]*"' | sed 's/version="//;s/"//' | sort -V)
+
+  if [ -z "$versions" ]; then
+    echo "Error: No IC versions found in releases XML"
+    exit 1
+  fi
+
+  # Get oldest supported major version's latest point release (2024.1.x)
+  local oldest
+  oldest=$(echo "$versions" | grep '^2024\.1\.' | tail -1)
+
+  # Get newest version's latest point release
+  local newest
+  newest=$(echo "$versions" | tail -1)
+
+  if [ -z "$oldest" ] || [ -z "$newest" ]; then
+    echo "Error: Could not determine oldest/newest versions"
+    exit 1
+  fi
+
+  echo "    Oldest supported: $oldest"
+  echo "    Newest available: $newest"
+
+  # Update build.gradle.kts
+  local gradle_file="build.gradle.kts"
+  sed -i.bak -E "s/ideVersions\.set\(listOf\([^)]+\)\)/ideVersions.set(listOf(\"$oldest\", \"$newest\"))/" "$gradle_file"
+  rm -f "$gradle_file.bak"
+
+  echo ""
+  echo "==> Updated $gradle_file"
+  echo ""
+  grep -A1 'ideVersions.set' "$gradle_file" | head -2
 }
 
 function release() {

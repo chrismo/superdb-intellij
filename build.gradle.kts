@@ -169,7 +169,9 @@ tasks {
     }
 
     runPluginVerifier {
-        ideVersions.set(listOf("2024.1", "2024.2", "2024.3", "2025.1", "2025.2", "2025.3"))
+        // Minimal coverage: oldest supported + newest release
+        // Update with: ./build.sh update-ide-versions
+        ideVersions.set(listOf("2024.1.7", "2025.3.1"))
     }
 }
 
