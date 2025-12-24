@@ -4,5 +4,5 @@ SELECT
     EXTRACT(year FROM timestamp) AS year,
     EXTRACT(month FROM timestamp) AS month,
     SUBSTRING(name FROM 1 FOR 10) AS short_name,
-    SUBSTRING(email FROM position('@' IN email) + 1) AS domain
+    SUBSTRING(email FROM 5) AS email_suffix
 FROM users

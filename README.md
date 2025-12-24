@@ -109,37 +109,82 @@ Citations:
 - [ ] Quick documentation popup
 - [ ] Parameter hints
 
-### Language Injection (In Progress)
+### Language Injection
 
-Enable full SuperDB language support inside strings in shell scripts.
+Full SuperDB/SuperSQL language support inside shell scripts, including syntax highlighting, code completion, and error checking.
 
 #### BashSupport Pro (Recommended)
 
-[BashSupport Pro](https://www.bashsupport.com/) is required for language injection in shell scripts. It provides:
+[BashSupport Pro](https://www.bashsupport.com/) provides the best experience with **automatic injection** - no comments required!
 
-- **Automatic detection** of `super -c "..."` patterns
-- **Comment-based injection** with `# language=SuperDB`
-- **Manual injection** via right-click → Inject Language → SuperDB
+**Automatic Detection (No Comments Needed):**
 
 ```bash
-# Automatic syntax highlighting for super -c queries!
-super -c "from data.json | where status == 'active' | sort -r timestamp"
+# String-based queries - automatic injection!
+super -c "from data.json | where status == 'active'"
+super --command "from events.json | count()"
 
-# Or use explicit comment annotation:
-# language=SuperDB
-super -c "from data.json | count()"
+# Multi-line strings work too!
+super -c "from events.json
+| where timestamp > now() - 1h
+| sort -r timestamp
+| head 100"
+
+# Heredocs with QUOTED markers (disable variable expansion)
+super -c <<"EOF"
+from events.json
+| where level == 'error'
+| sort -r timestamp
+EOF
+
+# Marker-based heredocs (inject even without super command)
+cat <<"SUPERSQL" | super
+from data.json
+| where status == 'active'
+| count()
+SUPERSQL
 ```
+
+**Recognized Heredoc Markers:**
+- `SUPERSQL`, `SUPER`, `SPQ`, `ZQ`, `SUPERDB` (case-insensitive)
+- These markers trigger injection regardless of the command name
+
+**Important: Heredoc Quoting**
+
+Heredocs must use **quoted markers** (`<<"EOF"` or `<<'EOF'`) for injection to work. Unquoted heredocs (`<<EOF`) allow variable expansion, which conflicts with language injection.
+
+```bash
+# ✅ Works - quoted marker disables variable expansion
+super -c <<"EOF"
+from data.json | count()
+EOF
+
+# ❌ Won't inject - unquoted marker allows variables
+super -c <<EOF
+from $DATA_FILE | count()
+EOF
+```
+
+**Status:**
+- [x] Automatic `super -c "..."` detection
+- [x] Automatic `super --command "..."` detection
+- [x] Multi-line string injection
+- [x] Heredoc injection (quoted markers)
+- [x] Marker-based heredoc injection (SUPERSQL, SUPER, SPQ, ZQ, SUPERDB)
+- [x] Comment/manual injection via IntelliLang
 
 #### Built-in Shell Plugin
 
-The built-in Shell plugin (`com.intellij.sh`) does **not** support language injection. Its PSI elements don't implement `PsiLanguageInjectionHost`, which is required by IntelliJ's injection framework.
+The built-in Shell plugin (`com.intellij.sh`) has a **technical limitation** - its PSI elements don't implement `PsiLanguageInjectionHost`, which IntelliJ's injection framework requires.
 
-**Status:**
-- [ ] BashSupport Pro automatic detection (in progress)
-- [x] BashSupport Pro comment/manual injection (via IntelliLang)
-- ❌ Built-in Shell plugin (not supported, technical limitation)
+**Workaround:** Use `# language=SuperDB` comment annotations:
 
-**Note:** `zq` command not supported due to syntax divergence from SuperDB.
+```bash
+# language=SuperDB
+super -c "from data.json | where type == 'important'"
+```
+
+**Limitation:** The comment-based approach only works for single-line strings immediately following the comment. Multi-line support is limited.
 
 ### Other
 - [ ] Run configurations (execute SuperDB queries from IDE)

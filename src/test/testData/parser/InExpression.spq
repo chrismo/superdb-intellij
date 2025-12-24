@@ -1,0 +1,5 @@
+-- Test IN operator with various right-hand expressions
+from data.json | where x in (1, 2, 3)
+from data.json | where x in arr
+from data.json | where x in this.items
+from data.json | where x not in excluded

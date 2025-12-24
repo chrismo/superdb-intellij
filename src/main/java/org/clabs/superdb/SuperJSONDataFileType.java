@@ -5,36 +5,36 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public final class SuperSQLQueryFileType extends LanguageFileType {
+public final class SuperJSONDataFileType extends LanguageFileType {
 
-    public static final SuperSQLQueryFileType INSTANCE = new SuperSQLQueryFileType();
+    public static final SuperJSONDataFileType INSTANCE = new SuperJSONDataFileType();
 
-    private SuperSQLQueryFileType() {
+    private SuperJSONDataFileType() {
         super(SuperSQLLanguage.INSTANCE);
     }
 
     @NotNull
     @Override
     public String getName() {
-        return "SuperSQL Query File";
+        return "SuperJSON Data File";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "SuperSQL Query language file";
+        return "SuperJSON data file";
     }
 
     @NotNull
     @Override
     public String getDisplayName() {
-        return "SuperSQL Query File";
+        return "SuperJSON Data File";
     }
 
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "spq";
+        return "sup";
     }
 
     @Override

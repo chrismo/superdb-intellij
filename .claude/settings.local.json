@@ -25,7 +25,9 @@
       "Bash(cat:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:blog.jetbrains.com)",
-      "WebFetch(domain:medium.com)"
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:superdb.org)",
+      "Bash(unzip:*)"
     ]
   },
   "hooks": {

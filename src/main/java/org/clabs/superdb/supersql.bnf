@@ -19,6 +19,7 @@
     PIPE_ARROW = '|>'
     PIPE = '|'
     CONCAT = '||'
+    TYPE_DECORATOR = '::='
     CAST_OP = '::'
     ASSIGN = ':='
     SPREAD = '...'
@@ -106,6 +107,7 @@
     BETWEEN = 'BETWEEN'
     LIKE = 'LIKE'
     IN = 'IN'
+    INTO = 'INTO'
     IS = 'IS'
     ASC = 'ASC'
     DESC = 'DESC'
@@ -232,13 +234,24 @@
 // === Top Level ===
 superSqlFile ::= query_item*
 
-private query_item ::= declaration | pipe_sequence | SEMICOLON {recoverWhile=query_item_recover}
-private query_item_recover ::= !(SEMICOLON | declaration_keyword | statement_start_keyword | IDENTIFIER | LPAREN)
+// BASH_INTERPOLATION as standalone item allows unknown bash content (e.g., type declarations)
+// to be followed by operators like 'where' without requiring explicit |
+private query_item ::= declaration | BASH_INTERPOLATION | pipe_sequence | SEMICOLON {recoverWhile=query_item_recover}
+private query_item_recover ::= !(SEMICOLON | declaration_keyword | statement_start_keyword | expression_start | IDENTIFIER | LPAREN | BASH_INTERPOLATION)
 
 // Keywords that can start a new statement (for error recovery)
 private statement_start_keyword ::= SELECT | FROM | WITH | FORK | SWITCH | SEARCH | ASSERT
                                   | SORT | TOP | CUT | DROP | HEAD | TAIL | PUT | RENAME
                                   | SUMMARIZE | AGGREGATE | VALUES | LOAD | OUTPUT | DEBUG
+
+// Tokens that can start a new expression (for data files)
+private expression_start ::= LBRACE | LBRACKET | SET_LBRACKET | MAP_LBRACE
+                           | DOUBLE_QUOTED_STRING
+                           | INT_LIT | FLOAT_LIT | HEX_LIT | NAN_LIT | INF_LIT
+                           | TRUE | FALSE | NULL
+                           | TIMESTAMP_LIT | DURATION_LIT
+                           | BASH_INTERPOLATION
+                           | IP4_LIT | IP6_LIT | IP4_NET_LIT | IP6_NET_LIT
 
 private declaration_keyword ::= CONST | FN | LET | OP | PRAGMA | TYPE_KW
 
@@ -488,7 +501,7 @@ unnest_op ::= UNNEST expr ordinality_clause? into_clause? {pin=1}
 
 ordinality_clause ::= WITH ORDINALITY
 
-into_clause ::= IN scope_body
+into_clause ::= (IN | INTO) scope_body
 
 // Values Operator
 values_op ::= VALUES expr_list? {pin=1}
@@ -557,7 +570,7 @@ comparison_expr ::= additive_expr comparison_tail?
 
 private comparison_tail ::= comparator additive_expr
                           | IS NOT? NULL
-                          | NOT? IN (LPAREN expr_list RPAREN | subquery_expr)
+                          | NOT? IN (LPAREN expr_list RPAREN | subquery_expr | additive_expr)
                           | NOT? LIKE additive_expr
 
 private comparator ::= EQ | NEQ | LT | GT | LE | GE | MATCH | EQUALS
@@ -570,7 +583,8 @@ concat_expr ::= unary_expr (CONCAT unary_expr)*
 
 unary_expr ::= (PLUS | MINUS)? cast_expr
 
-cast_expr ::= deref_expr (CAST_OP type_expr)*
+// Handles both type casting (::type) and type decorators (::=name)
+cast_expr ::= deref_expr (CAST_OP type_expr | TYPE_DECORATOR simple_name)*
 
 deref_expr ::= primary_expr (DOT deref_key | LBRACKET slice_expr RBRACKET | LBRACKET expr RBRACKET)*
 
@@ -578,8 +592,10 @@ private deref_key ::= IDENTIFIER | DOUBLE_QUOTED_STRING | BACKTICK_STRING
 
 slice_expr ::= expr? COLON expr?
 
+// paren_expr before subquery_expr to handle (expr - expr) vs (query | pipe)
 primary_expr ::= case_expr
                | record_expr
+               | paren_expr
                | subquery_expr
                | array_expr
                | set_expr
@@ -589,9 +605,12 @@ primary_expr ::= case_expr
                | lambda_expr
                | tuple_expr
                | type_literal
+               | bash_interp_expr
                | literal
                | id_or_call
-               | paren_expr
+
+// Bash variable interpolation ${...} - treated as opaque expression
+bash_interp_expr ::= BASH_INTERPOLATION
 
 paren_expr ::= LPAREN expr RPAREN
 
@@ -633,7 +652,8 @@ function_call ::= lambda_expr LPAREN func_args? RPAREN where_clause?
                 | position_function
                 | count_function
 
-cast_function ::= CAST LPAREN expr AS type_expr RPAREN {pin=1}
+// Supports both SQL style: CAST(expr AS type) and SuperDB style: cast(expr, <type>)
+cast_function ::= CAST LPAREN expr (AS type_expr | COMMA type_literal) RPAREN {pin=1}
 extract_function ::= EXTRACT LPAREN expr FROM expr RPAREN {pin=1}
 exists_function ::= EXISTS LPAREN query_body RPAREN {pin=1}
 substring_function ::= SUBSTRING LPAREN expr (FROM expr)? (FOR expr)? RPAREN {pin=1}
@@ -695,7 +715,8 @@ spread_elem ::= SPREAD expr {pin=1}
 
 field_elem ::= field_name COLON expr {pin=2}
 
-field_name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING | keyword_as_name
+// Field names in records can be any keyword - SuperJSON is permissive
+field_name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING | any_keyword
 
 expr_elem ::= expr
 
@@ -752,6 +773,7 @@ simple_name ::= IDENTIFIER | DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING | keywo
 // Keywords that can safely be used as identifiers (column names, field names).
 // EXCLUDES syntax keywords like CASE/WHEN/THEN/ELSE/END, AND/OR/NOT, etc.
 // that would cause parsing ambiguity in expressions.
+// IS is included to support the is() function (e.g., is(<record>))
 private keyword_as_name ::= VALUE | VALUES | DATE_KW | TIMESTAMP_KW | INTERVAL
                           | ASC | DESC | NULLS | FIRST | LAST
                           | HEAD | TAIL | TOP | SORT | CUT | DROP | PUT | RENAME
@@ -759,6 +781,30 @@ private keyword_as_name ::= VALUE | VALUES | DATE_KW | TIMESTAMP_KW | INTERVAL
                           | LOAD | OUTPUT | DEBUG | CALL | COUNT
                           | TYPE_KW | ERROR | ENUM | MAP_KW
                           | AGGREGATE | SUMMARIZE | DEFAULT
+                          | IS | JOIN
+                          | IP_TYPE | NET_TYPE | BOOL | STRING_TYPE | DURATION_TYPE | TIME_TYPE | BYTES_TYPE
+
+// All keywords - for contexts like record field names where any keyword is valid
+private any_keyword ::= keyword_as_name
+    // SQL keywords not in keyword_as_name
+    | SELECT | FROM | WHERE | GROUP | BY | HAVING | ORDER | LIMIT | OFFSET
+    | UNION | ALL | DISTINCT | AS | AT_KW | ON | USING
+    | LEFT | RIGHT | INNER | OUTER | FULL | CROSS | ANTI
+    | WITH | RECURSIVE | MATERIALIZED | ORDINALITY
+    | CASE | WHEN | THEN | ELSE | END | CAST | EXTRACT | SUBSTRING | POSITION
+    | FOR | EXISTS | BETWEEN | LIKE | IN | INTO
+    // Boolean/Logic (TRUE, FALSE, NULL excluded - they're literal values, not valid field names)
+    | AND | OR | NOT
+    // Pipe operators not in keyword_as_name
+    | FORK | SWITCH | SEARCH | ASSERT | SKIP_KW | UNIQ
+    // Declaration keywords
+    | CONST | FN | LET | LAMBDA | OP | PRAGMA
+    // Primitive types
+    | UINT8 | UINT16 | UINT32 | UINT64 | INT8 | INT16 | INT32 | INT64
+    | FLOAT16 | FLOAT32 | FLOAT64
+    // PostgreSQL types
+    | TEXT | VARCHAR | INTEGER | CHAR | REAL | SMALLINT | BIGINT
+    | BOOLEAN | BYTEA | CIDR | INET
 
 record_type ::= LBRACE type_field_list? RBRACE
 

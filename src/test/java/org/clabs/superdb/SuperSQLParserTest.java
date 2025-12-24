@@ -188,6 +188,34 @@ public class SuperSQLParserTest extends ParsingTestCase {
         doTest(true);
     }
 
+    public void testIsFunction() {
+        doTest(true);
+    }
+
+    public void testUnnestInto() {
+        doTest(true);
+    }
+
+    public void testInExpression() {
+        doTest(true);
+    }
+
+    public void testIpv6Network() {
+        doTest(true);
+    }
+
+    public void testRecordWithTypeKeywordFields() {
+        doTest(true);
+    }
+
+    public void testCastExpression() {
+        doTest(true);
+    }
+
+    public void testParenExprInRecord() {
+        doTest(true);
+    }
+
     public void testSortReverse() {
         doTest(true);
     }
@@ -211,6 +239,18 @@ public class SuperSQLParserTest extends ParsingTestCase {
     }
 
     public void testBasicInclude() {
+        doTest(true);
+    }
+
+    public void testJoinFunction() {
+        doTest(true);
+    }
+
+    public void testBashInterpolation() {
+        doTest(true);
+    }
+
+    public void testTypeLiteralInCast() {
         doTest(true);
     }
 }

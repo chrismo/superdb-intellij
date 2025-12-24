@@ -1,0 +1,3 @@
+-- Test type literal in cast function
+cast(this, <record>)
+cast(x, <{id: string, value: int64}>)

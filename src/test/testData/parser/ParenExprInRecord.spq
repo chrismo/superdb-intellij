@@ -1,0 +1,6 @@
+-- Test parenthesized expressions in record fields
+{
+    a: (1 + 2),
+    b: (now() - 1h),
+    c: (x * y / z)
+}

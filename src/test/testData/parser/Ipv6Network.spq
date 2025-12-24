@@ -1,0 +1,5 @@
+-- Test IPv6 network literals
+2001:db8::/32
+fe80::/10
+::1/128
+2001:db8::1/64

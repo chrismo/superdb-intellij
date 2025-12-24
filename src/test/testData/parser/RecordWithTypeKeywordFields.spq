@@ -1,0 +1,10 @@
+-- Test record with type keyword field names (ip, bool, string, etc.)
+{
+    ip: 192.168.1.50,
+    net: 10.0.0.0/8,
+    bool: true,
+    string: "hello",
+    duration: 30m,
+    time: 2024-01-15T10:30:45.123Z,
+    bytes: 0xDEADBEEF
+}

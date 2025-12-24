@@ -1,0 +1,3 @@
+-- Test is() function used for type checking
+from data.json | where is(this, <record>)
+from data.json | where is(value, <string>)

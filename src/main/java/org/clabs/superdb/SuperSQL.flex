@@ -13,6 +13,9 @@ import static org.clabs.superdb.psi.SuperSQLTypes.*;
   public SuperSQLLexer() {
     this((java.io.Reader)null);
   }
+
+  // For tracking nested braces in bash interpolation
+  private int bashBraceDepth = 0;
 %}
 
 %public
@@ -73,12 +76,14 @@ IP6_PART={HEX_DIGIT}+
 // This prevents ::f from matching (would conflict with :: cast operator + float64)
 IP6_FULL=({IP6_PART}":")+{IP6_PART}
 IP6_COMPRESSED_START="::"{IP6_PART}(":"{IP6_PART})+
-IP6_COMPRESSED_END=({IP6_PART}":")+"::"({IP6_PART}(":"{IP6_PART})*)?
+// Require at least one colon-hexpart before :: to avoid conflict with cast operator (54321::uint16)
+IP6_COMPRESSED_END={IP6_PART}(":"{IP6_PART})+"::"({IP6_PART}(":"{IP6_PART})*)?
 IP6_LOOPBACK="::1"
 IP6={IP6_FULL}|{IP6_COMPRESSED_START}|{IP6_COMPRESSED_END}|{IP6_LOOPBACK}
 IP6_NET={IP6}"/"{DIGIT}+
 
 %state STRING_STATE
+%state BASH_INTERP
 
 %%
 
@@ -91,6 +96,7 @@ IP6_NET={IP6}"/"{DIGIT}+
   "|>"                                { return PIPE_ARROW; }
   "|"                                 { return PIPE; }
   "||"                                { return CONCAT; }
+  "::="                               { return TYPE_DECORATOR; }
   "::"                                { return CAST_OP; }
   ":="                                { return ASSIGN; }
   "..."                               { return SPREAD; }
@@ -120,6 +126,8 @@ IP6_NET={IP6}"/"{DIGIT}+
   ")"                                 { return RPAREN; }
   "["                                 { return LBRACKET; }
   "]"                                 { return RBRACKET; }
+  // Bash interpolation - must come before { to match ${ first
+  "${"                                { bashBraceDepth = 1; yybegin(BASH_INTERP); }
   "{"                                 { return LBRACE; }
   "}"                                 { return RBRACE; }
   "|["                                { return SET_LBRACKET; }
@@ -174,6 +182,7 @@ IP6_NET={IP6}"/"{DIGIT}+
   [Ee][Xx][Ii][Ss][Tt][Ss]           { return EXISTS; }
   [Bb][Ee][Tt][Ww][Ee][Ee][Nn]       { return BETWEEN; }
   [Ll][Ii][Kk][Ee]                   { return LIKE; }
+  [Ii][Nn][Tt][Oo]                   { return INTO; }
   [Ii][Nn]                           { return IN; }
   [Ii][Ss]                           { return IS; }
   [Aa][Ss][Cc]                       { return ASC; }
@@ -300,6 +309,16 @@ IP6_NET={IP6}"/"{DIGIT}+
 
   // Identifier (must come after keywords)
   {IDENTIFIER}                       { return IDENTIFIER; }
+}
+
+// Bash interpolation state - track nested braces until we close the ${...}
+<BASH_INTERP> {
+  "{"                                 { bashBraceDepth++; }
+  "}"                                 { bashBraceDepth--; if (bashBraceDepth == 0) { yybegin(YYINITIAL); return BASH_INTERPOLATION; } }
+  \"([^\"\\\n\r]|\\.)*\"              { /* skip strings with possible braces */ }
+  '([^'\\\n\r]|\\.)*'                 { /* skip strings with possible braces */ }
+  [^{}\"\'\n\r]+                      { /* skip other content */ }
+  [\n\r]                              { /* skip newlines */ }
 }
 
 [^]                                  { return BAD_CHARACTER; }

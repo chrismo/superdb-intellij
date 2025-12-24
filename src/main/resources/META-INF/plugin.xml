@@ -19,6 +19,7 @@
     <h3>Features</h3>
     <ul>
         <li><strong>SuperSQL Query Language</strong> - Full syntax highlighting for .spq files</li>
+        <li><strong>SuperJSON Data Files</strong> - Support for .sup data files with validation</li>
         <li><strong>SQL Compatibility</strong> - Standard SQL keywords and clauses</li>
         <li><strong>Pipe Operators</strong> - fork, switch, sort, top, head, tail, and more</li>
         <li><strong>Rich Types</strong> - int64, float64, string, duration, time, ip, net, etc.</li>
@@ -58,6 +59,13 @@
                 language="SuperDB"
                 extensions="spq"/>
 
+        <fileType
+                name="SuperJSON Data File"
+                implementationClass="org.clabs.superdb.SuperJSONDataFileType"
+                fieldName="INSTANCE"
+                language="SuperDB"
+                extensions="sup"/>
+
         <!-- Parser Definition -->
         <lang.parserDefinition
                 language="SuperDB"
@@ -96,5 +104,29 @@
         <annotator
                 language="SuperDB"
                 implementationClass="org.clabs.superdb.SuperSQLAnnotator"/>
+
+        <!-- Annotator that flags operators in SuperJSON data files -->
+        <annotator
+                language="SuperDB"
+                implementationClass="org.clabs.superdb.SuperJSONOperatorAnnotator"/>
+
+        <!-- Language injection contributor for automatic SuperSQL injection in shell scripts -->
+        <!-- This works with BashSupport Pro without needing to know its obfuscated class names -->
+        <languageInjectionContributor
+                implementationClass="org.clabs.superdb.injection.SuperSQLInjectionContributor"/>
+
+        <!-- Inspection for syntax errors - shows under "SuperDB" category -->
+        <localInspection
+                language="SuperDB"
+                groupName="SuperDB"
+                shortName="SuperSQLSyntax"
+                displayName="Syntax errors"
+                enabledByDefault="true"
+                level="ERROR"
+                implementationClass="org.clabs.superdb.SuperSQLSyntaxInspection"/>
+
+        <!-- Filter to suppress default parser error highlighting (we use our inspection instead) -->
+        <highlightErrorFilter
+                implementation="org.clabs.superdb.SuperSQLHighlightErrorFilter"/>
     </extensions>
 </idea-plugin>

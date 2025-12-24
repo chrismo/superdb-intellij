@@ -1,0 +1,2 @@
+-- Test unnest with into clause using INTO keyword
+from data.json | unnest items into (where x > 0)

@@ -1,0 +1,7 @@
+-- Test bash variable interpolation in arrays
+[
+  {type:10, content:'hello'},
+  ${ some_func "$arg"; },
+  ${ another_func; },
+  {type:1}
+] | unnest this | where this is not null | collect(this)

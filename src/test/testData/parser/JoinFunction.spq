@@ -1,0 +1,4 @@
+-- Test join() used as a function (not pipe operator)
+unnest [1,2,3]
+| collect(this)
+| join(this, ',')

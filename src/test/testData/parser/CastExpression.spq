@@ -1,0 +1,8 @@
+-- Test cast expressions with :: operator
+{
+    port: 443::uint16,
+    size: 1024::uint64,
+    ratio: 3.14::float32
+}
+54321::uint16
+1024::int64
