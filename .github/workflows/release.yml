@@ -76,13 +76,14 @@ jobs:
             # Use explicit tag version
             VERSION="${{ github.ref_name }}"
           elif [ -f src/main/resources/lsp/VERSION ]; then
-            # Use LSP version to stay in sync
+            # Use LSP version to stay in sync (format: v0.51222 -> 0.51222.0)
             LSP_VERSION=$(cat src/main/resources/lsp/VERSION)
-            VERSION="${LSP_VERSION}"
-            echo "Using LSP version: $VERSION"
+            # Strip 'v' prefix and add '.0' patch suffix
+            VERSION="${LSP_VERSION#v}.0"
+            echo "Using LSP version: $LSP_VERSION -> $VERSION"
           else
             # Fallback to date-based version
-            VERSION="v$(date +'%Y.%m.%d')-$(git rev-parse --short HEAD)"
+            VERSION="$(date +'%Y.%m.%d')-$(git rev-parse --short HEAD)"
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "artifact_name=superdb-plugin-${VERSION}" >> $GITHUB_OUTPUT

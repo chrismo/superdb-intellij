@@ -26,15 +26,15 @@ mkdir -p "$OUTPUT_DIR"
 if command -v gh &> /dev/null; then
     echo "Downloading LSP binaries from $LSP_REPO using gh..."
 
-    GH_ARGS=(release download --repo "$LSP_REPO" --pattern 'superdb-lsp-*' --dir "$OUTPUT_DIR" --clobber)
-    if [[ -n "$VERSION" && "$VERSION" != "latest" ]]; then
-        GH_ARGS+=("$VERSION")
+    # Resolve "latest" to actual tag (gh release download needs explicit tag in some environments)
+    if [[ -z "$VERSION" || "$VERSION" == "latest" ]]; then
+        VERSION=$(gh release view --repo "$LSP_REPO" --json tagName -q '.tagName')
+        echo "  Resolved latest to: $VERSION"
     fi
 
-    gh "${GH_ARGS[@]}"
+    gh release download "$VERSION" --repo "$LSP_REPO" --pattern 'superdb-lsp-*' --dir "$OUTPUT_DIR" --clobber
 
-    # Get the version that was downloaded
-    DOWNLOADED_VERSION=$(gh release view --repo "$LSP_REPO" ${VERSION:+"$VERSION"} --json tagName -q '.tagName')
+    DOWNLOADED_VERSION="$VERSION"
 
 # Fallback to curl + super for JSON parsing
 elif command -v super &> /dev/null; then

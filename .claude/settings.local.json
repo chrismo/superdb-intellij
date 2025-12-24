@@ -29,7 +29,11 @@
       "WebFetch(domain:superdb.org)",
       "Bash(unzip:*)",
       "Bash(gh run list:*)",
-      "Bash(gh run view:*)"
+      "Bash(gh run view:*)",
+      "Bash(gh release list:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh release download:*)",
+      "Bash(gh release view:*)"
     ]
   },
   "hooks": {
