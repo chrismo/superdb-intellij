@@ -1,25 +1,17 @@
 name: Release
 
 on:
-  # Release on version tags
+  # Release on version tags only
   push:
     tags:
       - 'v*'
-    branches:
-      - main
-      - master
-  # Manual trigger
+  # Manual trigger for re-releasing or testing
   workflow_dispatch:
     inputs:
       lsp_version:
         description: 'LSP version to bundle (tag or "latest")'
         required: false
         default: 'latest'
-      create_release:
-        description: 'Create a GitHub release'
-        required: false
-        default: 'true'
-        type: boolean
 
 # Cancel in-progress runs for the same ref
 concurrency:
@@ -72,22 +64,11 @@ jobs:
       - name: Calculate Version
         id: version
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            # Use explicit tag version
-            VERSION="${{ github.ref_name }}"
-          elif [ -f src/main/resources/lsp/VERSION ]; then
-            # Use LSP version to stay in sync (format: v0.51222 -> 0.51222.0)
-            LSP_VERSION=$(cat src/main/resources/lsp/VERSION)
-            # Strip 'v' prefix and add '.0' patch suffix
-            VERSION="${LSP_VERSION#v}.0"
-            echo "Using LSP version: $LSP_VERSION -> $VERSION"
-          else
-            # Fallback to date-based version
-            VERSION="$(date +'%Y.%m.%d')-$(git rev-parse --short HEAD)"
-          fi
+          # Version comes from git tag (e.g., v0.51222.0 -> v0.51222.0)
+          VERSION="${{ github.ref_name }}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "artifact_name=superdb-plugin-${VERSION}" >> $GITHUB_OUTPUT
-          echo "Final version: $VERSION"
+          echo "Version: $VERSION"
 
       - name: Build Plugin
         run: ./gradlew buildPlugin
@@ -109,11 +90,6 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     needs: build-release
-    # Create release for tags OR main branch pushes (unless disabled)
-    if: |
-      startsWith(github.ref, 'refs/tags/') ||
-      (github.ref == 'refs/heads/main' && github.event.inputs.create_release != 'false') ||
-      (github.ref == 'refs/heads/master' && github.event.inputs.create_release != 'false')
 
     permissions:
       contents: write
@@ -136,13 +112,13 @@ jobs:
           VERSION="${{ needs.build-release.outputs.version }}"
 
           # Get commits since last tag (or last 10 if no tags)
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
 
           if [ -n "$LAST_TAG" ]; then
             echo "## Changes since $LAST_TAG" > release_notes.md
             git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)" >> release_notes.md
           else
-            echo "## Recent Changes" > release_notes.md
+            echo "## Initial Release" > release_notes.md
             git log -10 --pretty=format:"- %s (%h)" >> release_notes.md
           fi
 
@@ -162,7 +138,7 @@ jobs:
           body_path: release_notes.md
           files: dist/*.zip
           draft: false
-          prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
-          make_latest: ${{ startsWith(github.ref, 'refs/tags/') }}
+          prerelease: false
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

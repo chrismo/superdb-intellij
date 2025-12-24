@@ -33,7 +33,8 @@
       "Bash(gh release list:*)",
       "Bash(gh repo view:*)",
       "Bash(gh release download:*)",
-      "Bash(gh release view:*)"
+      "Bash(gh release view:*)",
+      "Bash(git fetch:*)"
     ]
   },
   "hooks": {
