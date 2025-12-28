@@ -40,8 +40,8 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
 
-    <!-- LSP4IJ dependency - optional to allow plugin to work without LSP -->
-    <depends optional="true" config-file="supersql-lsp.xml">com.redhat.devtools.lsp4ij</depends>
+    <!-- LSP4IJ dependency - required for LSP features (completion, hover, formatting, etc.) -->
+    <depends config-file="supersql-lsp.xml">com.redhat.devtools.lsp4ij</depends>
 
     <!-- BashSupport Pro for automatic language injection into shell scripts -->
     <!-- Note: Built-in Shell plugin (com.intellij.sh) doesn't support injection hosts,

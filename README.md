@@ -1,11 +1,58 @@
-# SuperDB Plugin for JetBrains IDEs 
+# SuperDB Plugin for JetBrains IDEs
 
-In Feb 2025 I messed around with this just a little bit, then didn't do
-anything else.
+SuperSQL/SuperDB language support for IntelliJ-based IDEs (IntelliJ IDEA, RustRover, PyCharm, etc.).
 
-In Dec 2025 with Claude Code in da house, I started unleashing it for some
-full-on vibe coding sessions in the cloud, cuz I didn't have much to lose with
-giving it a shot.
+## Architecture
+
+This plugin uses a **hybrid approach**: native IntelliJ PSI for syntax and LSP for semantic features.
+
+### Why Hybrid?
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| **Full PSI** | Deep IDE integration, refactoring, fast | Must maintain a Java parser in sync with upstream Go parser |
+| **Pure LSP** | One server for all editors, easy sync | Limited IDE integration, communication overhead |
+| **Hybrid** | Best of both worlds | Some complexity |
+
+SuperDB's parser lives in Go ([brimdata/super](https://github.com/brimdata/super)). Maintaining a second parser in Java just for IntelliJ doesn't make sense while the language is evolving. The LSP server ([superdb-syntaxes](https://github.com/chrismo/superdb-syntaxes)) serves VS Code, Neovim, Helix, Emacs, Sublime, *and* IntelliJ from one codebase.
+
+### What's Native vs LSP?
+
+| Feature | Implementation |
+|---------|---------------|
+| Syntax highlighting | Native (JFlex lexer) |
+| Brace matching | Native |
+| Code folding | Native |
+| Commenting | Native |
+| Built-in function styling | Native (Annotator) |
+| **Code completion** | LSP |
+| **Hover documentation** | LSP |
+| **Signature help** | LSP |
+| **Diagnostics** | LSP |
+| **Formatting** | LSP |
+
+### LSP Dependency
+
+This plugin requires an LSP client framework. Currently using [LSP4IJ](https://plugins.jetbrains.com/plugin/23257-lsp4ij) (by Red Hat).
+
+> **2025 Update:** JetBrains now offers an [official LSP API](https://blog.jetbrains.com/platform/2025/09/the-lsp-api-is-now-available-to-all-intellij-idea-users-and-plugin-developers/) available in all major IDEs (IntelliJ IDEA, RustRover, PyCharm, etc.) starting with 2023.2+. Migration to the official API is planned, which will eliminate the third-party dependency.
+
+### Trade-offs
+
+What you **get** with LSP:
+- Cross-editor consistency (same behavior in VS Code, Neovim, etc.)
+- Automatic sync with upstream SuperDB changes
+- Faster development cycle
+
+What you **give up** vs full PSI:
+- No deep refactoring (rename across files)
+- No structural search/replace
+- Slight communication overhead
+- Some advanced IDE features unavailable
+
+---
+
+*Origin story: Started in Feb 2025, then unleashed with Claude Code in Dec 2025 for some full-on vibe coding sessions.*
 
 [Custom Language Support Tutorial](https://plugins.jetbrains.com/docs/intellij/custom-language-support-tutorial.html)
 
@@ -82,32 +129,31 @@ dialect works.
 Citations:
 [1] https://github.com/JetBrains/Grammar-Kit
 
-## Planned Features
+## Features
 
-### Editing & Navigation
-- [ ] Syntax highlighting improvements
-- [ ] Code completion / autocomplete
+### Implemented
+
+**Native (always available):**
+- [x] Syntax highlighting (keywords, types, operators, strings, comments, etc.)
+- [x] Brace matching (`()`, `[]`, `{}`, `|[`, `|{`)
+- [x] Code folding
+- [x] Line and block commenting (`--`, `/* */`)
+- [x] Built-in function highlighting
+
+**Via LSP (requires LSP4IJ or official LSP API):**
+- [x] Code completion / autocomplete
+- [x] Hover documentation
+- [x] Signature help (parameter hints)
+- [x] Diagnostics (error highlighting)
+- [x] Code formatting
+
+### Planned
 - [ ] Go to definition
 - [ ] Find usages / references
 - [ ] Structure view (outline)
 - [ ] Breadcrumbs
-
-### Code Quality
-- [ ] Error highlighting / live validation
 - [ ] Quick fixes / intentions
-- [ ] Code inspections
-
-### Refactoring
 - [ ] Rename refactoring
-- [ ] Extract variable/function
-
-### Formatting
-- [ ] Auto-formatting / code style
-- [ ] Brace matching improvements
-
-### Documentation
-- [ ] Quick documentation popup
-- [ ] Parameter hints
 
 ### Language Injection
 

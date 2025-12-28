@@ -13,6 +13,7 @@
                 - Go to definition
                 - Find references
                 - Hover documentation
+                - Signature help (parameter hints)
                 - Diagnostics (errors and warnings)
                 - Code formatting
             ]]></description>

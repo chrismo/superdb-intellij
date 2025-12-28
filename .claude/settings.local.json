@@ -34,7 +34,13 @@
       "Bash(gh repo view:*)",
       "Bash(gh release download:*)",
       "Bash(gh release view:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(git log:*)",
+      "Bash(super -f text -)"
     ]
   },
   "hooks": {
