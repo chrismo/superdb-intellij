@@ -40,7 +40,8 @@
       "Bash(tree:*)",
       "Bash(find:*)",
       "Bash(git log:*)",
-      "Bash(super -f text -)"
+      "Bash(super -f text -)",
+      "Bash(super:*)"
     ]
   },
   "hooks": {

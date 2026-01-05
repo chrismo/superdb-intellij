@@ -143,6 +143,7 @@ public class SuperSQLSyntaxHighlighter extends SyntaxHighlighterBase {
             tokenType.equals(SuperSQLTypes.NULLS) ||
             tokenType.equals(SuperSQLTypes.FIRST) ||
             tokenType.equals(SuperSQLTypes.LAST) ||
+            tokenType.equals(SuperSQLTypes.FILTER) ||
             tokenType.equals(SuperSQLTypes.AND) ||
             tokenType.equals(SuperSQLTypes.OR) ||
             tokenType.equals(SuperSQLTypes.NOT)) {
@@ -219,6 +220,8 @@ public class SuperSQLSyntaxHighlighter extends SyntaxHighlighterBase {
             tokenType.equals(SuperSQLTypes.BYTEA) ||
             tokenType.equals(SuperSQLTypes.CHAR) ||
             tokenType.equals(SuperSQLTypes.CIDR) ||
+            tokenType.equals(SuperSQLTypes.FLOAT) ||
+            tokenType.equals(SuperSQLTypes.INT) ||
             tokenType.equals(SuperSQLTypes.INTEGER) ||
             tokenType.equals(SuperSQLTypes.INET) ||
             tokenType.equals(SuperSQLTypes.MAP_KW) ||

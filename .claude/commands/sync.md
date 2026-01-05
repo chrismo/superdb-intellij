@@ -10,7 +10,7 @@ Execute ALL steps below in sequence. Do NOT stop for confirmation. Fix any issue
 
 ### Phase 1: Fetch Upstream Sources
 
-Use `gh api` (not curl) to fetch files from brimdata/super main branch:
+Fetch files from brimdata/super main branch using raw GitHub URLs (simpler than gh api + base64 decoding):
 
 | File | Purpose | What to Extract |
 |------|---------|-----------------|
@@ -20,16 +20,16 @@ Use `gh api` (not curl) to fetch files from brimdata/super main branch:
 
 **Note:** Do NOT use `compiler/parser/valid.spq` - it's not reliably maintained and contains stale syntax.
 
-Fetch each file:
+Fetch each file using raw URLs:
 ```bash
-gh api repos/brimdata/super/contents/compiler/parser/parser.peg --jq '.content' | base64 -d
-gh api repos/brimdata/super/contents/runtime/sam/expr/function/function.go --jq '.content' | base64 -d
-gh api repos/brimdata/super/contents/runtime/sam/expr/agg/agg.go --jq '.content' | base64 -d
+curl -sL https://raw.githubusercontent.com/brimdata/super/main/compiler/parser/parser.peg > .claude/upstream-parser.peg
+curl -sL https://raw.githubusercontent.com/brimdata/super/main/runtime/sam/expr/function/function.go > .claude/upstream-function.go
+curl -sL https://raw.githubusercontent.com/brimdata/super/main/runtime/sam/expr/agg/agg.go > .claude/upstream-agg.go
 ```
 
-Get the latest commit info:
+Get the latest commit SHA:
 ```bash
-gh api repos/brimdata/super/commits/main --jq '.sha'
+curl -sL https://api.github.com/repos/brimdata/super/commits/main | super -f text -c 'cut sha' -
 ```
 
 ### Phase 2: Extract Function Names from Go Files
@@ -179,7 +179,26 @@ Run the complete build and test cycle one more time:
 
 This MUST pass before committing.
 
-### Phase 15: Commit
+### Phase 15: Update CHANGELOG.md
+
+Add an entry to CHANGELOG.md documenting the grammar sync:
+- Add under "Unreleased" section (create if it doesn't exist)
+- List keywords/operators/types added or removed
+- Include the upstream commit SHA for reference
+- Use format consistent with existing changelog entries
+
+Example entry:
+```markdown
+## [Unreleased]
+
+### Changed
+- Synced grammar with brimdata/super (commit abc123)
+  - Added keywords: KEYWORD1, KEYWORD2
+  - Added types: type1, type2
+  - Removed deprecated: OLD_THING
+```
+
+### Phase 16: Commit
 
 Create a commit with:
 ```bash
@@ -198,7 +217,7 @@ EOF
 )"
 ```
 
-### Phase 16: Push
+### Phase 17: Push
 
 Push to the current branch:
 ```bash

@@ -114,6 +114,7 @@
     NULLS = 'NULLS'
     FIRST = 'FIRST'
     LAST = 'LAST'
+    FILTER = 'FILTER'
 
     // Boolean/Logic
     AND = 'AND'
@@ -198,6 +199,8 @@
     BYTEA = 'BYTEA'
     CHAR = 'CHAR'
     CIDR = 'CIDR'
+    FLOAT = 'FLOAT'
+    INT = 'INT'
     INTEGER = 'INTEGER'
     INET = 'INET'
     REAL = 'REAL'
@@ -757,7 +760,7 @@ primitive_type ::= UINT8 | UINT16 | UINT32 | UINT64
                  | BYTES_TYPE | IP_TYPE | NET_TYPE | NULL
                  | postgres_type
 
-private postgres_type ::= BIGINT | BOOLEAN | BYTEA | CHAR | CIDR
+private postgres_type ::= BIGINT | BOOLEAN | BYTEA | CHAR | CIDR | FLOAT | INT
                         | INTEGER | INET | REAL | SMALLINT | TEXT | VARCHAR
                         | DATE_KW | TIMESTAMP_KW | INTERVAL
 
@@ -804,7 +807,7 @@ private any_keyword ::= keyword_as_name
     | FLOAT16 | FLOAT32 | FLOAT64
     // PostgreSQL types
     | TEXT | VARCHAR | INTEGER | CHAR | REAL | SMALLINT | BIGINT
-    | BOOLEAN | BYTEA | CIDR | INET
+    | BOOLEAN | BYTEA | CIDR | INET | FLOAT | INT
 
 record_type ::= LBRACE type_field_list? RBRACE
 

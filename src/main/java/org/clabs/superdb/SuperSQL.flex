@@ -190,6 +190,7 @@ IP6_NET={IP6}"/"{DIGIT}+
   [Nn][Uu][Ll][Ll][Ss]               { return NULLS; }
   [Ff][Ii][Rr][Ss][Tt]               { return FIRST; }
   [Ll][Aa][Ss][Tt]                   { return LAST; }
+  [Ff][Ii][Ll][Tt][Ee][Rr]           { return FILTER; }
 
   // Boolean and Logic Keywords
   [Aa][Nn][Dd]                       { return AND; }
@@ -277,6 +278,8 @@ IP6_NET={IP6}"/"{DIGIT}+
   [Bb][Yy][Tt][Ee][Aa]               { return BYTEA; }
   [Cc][Hh][Aa][Rr]                   { return CHAR; }
   [Cc][Ii][Dd][Rr]                   { return CIDR; }
+  [Ff][Ll][Oo][Aa][Tt]               { return FLOAT; }
+  [Ii][Nn][Tt]                       { return INT; }
   [Ii][Nn][Tt][Ee][Gg][Ee][Rr]       { return INTEGER; }
   [Ii][Nn][Ee][Tt]                   { return INET; }
   [Rr][Ee][Aa][Ll]                   { return REAL; }
