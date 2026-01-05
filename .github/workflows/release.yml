@@ -29,6 +29,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       artifact_name: ${{ steps.version.outputs.artifact_name }}
+      skip_tag: ${{ steps.version.outputs.skip_tag }}
       skip_release: ${{ steps.version.outputs.skip_release }}
 
     steps:
@@ -75,11 +76,15 @@ jobs:
           echo "artifact_name=superdb-plugin-${VERSION}" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
 
-          # Check if this version already has a tag or release
+          # Check if tag and/or release already exist
           if git rev-parse "$VERSION" >/dev/null 2>&1; then
-            echo "skip_release=true" >> $GITHUB_OUTPUT
-            echo "Tag $VERSION already exists, skipping"
-          elif gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "skip_tag=true" >> $GITHUB_OUTPUT
+            echo "Tag $VERSION already exists"
+          else
+            echo "skip_tag=false" >> $GITHUB_OUTPUT
+          fi
+
+          if gh release view "$VERSION" >/dev/null 2>&1; then
             echo "skip_release=true" >> $GITHUB_OUTPUT
             echo "Release $VERSION already exists, skipping"
           else
@@ -89,7 +94,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Git Tag
-        if: steps.version.outputs.skip_release != 'true'
+        if: steps.version.outputs.skip_tag != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
