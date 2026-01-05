@@ -1,10 +1,10 @@
 name: Release
 
 on:
-  # Release on version tags only
+  # Release on merge to main
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
   # Manual trigger for re-releasing or testing
   workflow_dispatch:
     inputs:
@@ -29,6 +29,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       artifact_name: ${{ steps.version.outputs.artifact_name }}
+      skip_release: ${{ steps.version.outputs.skip_release }}
 
     steps:
       - name: Checkout
@@ -64,11 +65,25 @@ jobs:
       - name: Calculate Version
         id: version
         run: |
-          # Version comes from git tag (e.g., v0.51222.0 -> v0.51222.0)
-          VERSION="${{ github.ref_name }}"
+          # Version comes from LSP VERSION file (e.g., v0.51231.0)
+          if [ -f src/main/resources/lsp/VERSION ]; then
+            VERSION=$(cat src/main/resources/lsp/VERSION)
+          else
+            VERSION="v0.0.0-dev"
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "artifact_name=superdb-plugin-${VERSION}" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
+
+          # Check if this version already has a release
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "skip_release=true" >> $GITHUB_OUTPUT
+            echo "Release $VERSION already exists, skipping"
+          else
+            echo "skip_release=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Plugin
         run: ./gradlew buildPlugin
@@ -90,6 +105,7 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     needs: build-release
+    if: needs.build-release.outputs.skip_release != 'true'
 
     permissions:
       contents: write
@@ -100,6 +116,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create Git Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$VERSION" -m "Release $VERSION"
+          git push origin "$VERSION"
+        env:
+          VERSION: ${{ needs.build-release.outputs.version }}
+
       - name: Download Plugin Artifact
         uses: actions/download-artifact@v4
         with:
@@ -109,8 +134,6 @@ jobs:
       - name: Generate Release Notes
         id: notes
         run: |
-          VERSION="${{ needs.build-release.outputs.version }}"
-
           # Get commits since last tag (or last 10 if no tags)
           LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
 
