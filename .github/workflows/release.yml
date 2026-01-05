@@ -85,6 +85,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create Git Tag
+        if: steps.version.outputs.skip_release != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$VERSION" -m "Release $VERSION"
+          git push origin "$VERSION"
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+
       - name: Build Plugin
         run: ./gradlew buildPlugin
 
@@ -115,15 +125,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Create Git Tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "$VERSION" -m "Release $VERSION"
-          git push origin "$VERSION"
-        env:
-          VERSION: ${{ needs.build-release.outputs.version }}
 
       - name: Download Plugin Artifact
         uses: actions/download-artifact@v4
