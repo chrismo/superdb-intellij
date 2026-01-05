@@ -1,8 +1,12 @@
 # Sync SuperDB Plugin
 
-Fully automated synchronization of this IntelliJ plugin with the latest SuperDB:
+Fully automated synchronization of this IntelliJ plugin with the latest **superdb-lsp release**.
+
+The LSP release is the **source of truth**:
 1. **LSP binary** - Downloads latest from chrismo/superdb-lsp
-2. **Grammar** - Syncs keywords, types, functions from brimdata/super
+2. **Grammar** - Syncs from the exact brimdata/super commit the LSP was built against
+
+This ensures the plugin's grammar always matches the LSP's parser behavior.
 
 **This command runs end-to-end automatically. No user confirmation required.**
 
@@ -28,7 +32,7 @@ Expected format: `0.51231.0+abc1234` (semver with brimdata/super commit as build
 - Version before `+` → plugin version for CHANGELOG (e.g., `0.51231.0`)
 - SHA after `+` → brimdata/super commit to sync grammar from (e.g., `abc1234`)
 
-**Fallback:** If version doesn't contain `+`, use brimdata/super `main` branch.
+**If version doesn't contain `+`:** STOP and inform the user that the LSP needs to be rebuilt with the commit SHA embedded. Do NOT fall back to brimdata/super main branch - this would break the guarantee that grammar matches the LSP.
 
 ### Phase 1: Fetch Upstream Sources
 
@@ -44,7 +48,7 @@ Use WebFetch to retrieve these files (already approved, no temp files needed):
 
 **Note:** Do NOT use `compiler/parser/valid.spq` - it's not reliably maintained and contains stale syntax.
 
-Use WebFetch with the commit SHA from Phase 0 (or `main` as fallback):
+Use WebFetch with the commit SHA extracted from Phase 0:
 - `https://raw.githubusercontent.com/brimdata/super/{SHA}/compiler/parser/parser.peg`
 - `https://raw.githubusercontent.com/brimdata/super/{SHA}/runtime/sam/expr/function/function.go`
 - `https://raw.githubusercontent.com/brimdata/super/{SHA}/runtime/sam/expr/agg/agg.go`
