@@ -1,17 +1,17 @@
 #!/bin/bash
-# Download SuperSQL LSP binary from chrismo/superdb-syntaxes releases
+# Download SuperSQL LSP binary from chrismo/superdb-lsp releases
 #
 # Usage: ./scripts/download-lsp.sh [version]
 #   version: Release version (default: latest)
 #
 # Environment variables:
 #   GITHUB_TOKEN: Optional, for accessing private repos or higher rate limits
-#   LSP_REPO: Repository to fetch from (default: chrismo/superdb-syntaxes)
+#   LSP_REPO: Repository to fetch from (default: chrismo/superdb-lsp)
 
 set -euo pipefail
 
 VERSION="${1:-latest}"
-LSP_REPO="${LSP_REPO:-chrismo/superdb-syntaxes}"
+LSP_REPO="${LSP_REPO:-chrismo/superdb-lsp}"
 OUTPUT_DIR="${OUTPUT_DIR:-src/main/resources/lsp}"
 
 # Determine platform and architecture

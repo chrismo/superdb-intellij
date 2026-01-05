@@ -11,7 +11,7 @@
       "WebFetch(domain:api.github.com)",
       "Bash(gh api:*)",
       "Bash(git push)",
-      "Bash(LSP_REPO=chrismo/superdb-syntaxes bash -x scripts/download-all-platforms.sh latest)",
+      "Bash(LSP_REPO=chrismo/superdb-lsp bash -x scripts/download-all-platforms.sh latest)",
       "Bash(./scripts/download-all-platforms.sh:*)",
       "Bash(git pull:*)",
       "Bash(super --version:*)",

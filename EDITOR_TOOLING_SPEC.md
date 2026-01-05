@@ -146,7 +146,7 @@ vscode/
 - Graceful degradation if LSP unavailable
 
 **LSP Integration**:
-The plugin automatically fetches LSP binaries from `chrismo/superdb-syntaxes` releases.
+The plugin automatically fetches LSP binaries from `chrismo/superdb-lsp` releases.
 
 ```
 src/main/java/org/clabs/superdb/lsp/

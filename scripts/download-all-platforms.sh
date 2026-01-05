@@ -9,7 +9,7 @@
 set -euo pipefail
 
 VERSION="${1:-}"
-LSP_REPO="${LSP_REPO:-chrismo/superdb-syntaxes}"
+LSP_REPO="${LSP_REPO:-chrismo/superdb-lsp}"
 OUTPUT_DIR="${OUTPUT_DIR:-src/main/resources/lsp}"
 
 PLATFORMS=(

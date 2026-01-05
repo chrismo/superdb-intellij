@@ -14,7 +14,7 @@ This plugin uses a **hybrid approach**: native IntelliJ PSI for syntax and LSP f
 | **Pure LSP** | One server for all editors, easy sync | Limited IDE integration, communication overhead |
 | **Hybrid** | Best of both worlds | Some complexity |
 
-SuperDB's parser lives in Go ([brimdata/super](https://github.com/brimdata/super)). Maintaining a second parser in Java just for IntelliJ doesn't make sense while the language is evolving. The LSP server ([superdb-syntaxes](https://github.com/chrismo/superdb-syntaxes)) serves VS Code, Neovim, Helix, Emacs, Sublime, *and* IntelliJ from one codebase.
+SuperDB's parser lives in Go ([brimdata/super](https://github.com/brimdata/super)). Maintaining a second parser in Java just for IntelliJ doesn't make sense while the language is evolving. The LSP server ([superdb-lsp](https://github.com/chrismo/superdb-lsp)) serves VS Code, Neovim, Helix, Emacs, Sublime, *and* IntelliJ from one codebase.
 
 ### What's Native vs LSP?
 

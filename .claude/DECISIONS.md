@@ -6,7 +6,7 @@
 
 The IntelliJ plugin has two layers of syntax support:
 
-1. **LSP (bundled binary)** - Diagnostics, completion, hover from superdb-syntaxes
+1. **LSP (bundled binary)** - Diagnostics, completion, hover from superdb-lsp
 2. **Native parser (GrammarKit)** - Syntax highlighting, code folding, brace matching
 
 The native parser needs to stay in sync with upstream brimdata/super grammar (parser.peg).
@@ -37,5 +37,5 @@ The native parser needs to stay in sync with upstream brimdata/super grammar (pa
 ### Future Considerations
 
 - If grammar churn increases, consider building a diff-reporter
-- Could explore TextMate grammar (from superdb-syntaxes) as simpler alternative
+- Could explore TextMate grammar (from superdb-lsp) as simpler alternative
 - LSP could eventually replace native parser for most features

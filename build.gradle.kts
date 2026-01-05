@@ -203,7 +203,7 @@ tasks.prepareTestingSandbox {
 
 // LSP Configuration
 val lspRepo: String by project.extra {
-    findProperty("lspRepo")?.toString() ?: "chrismo/superdb-syntaxes"
+    findProperty("lspRepo")?.toString() ?: "chrismo/superdb-lsp"
 }
 val lspVersion: String by project.extra {
     findProperty("lspVersion")?.toString() ?: "latest"

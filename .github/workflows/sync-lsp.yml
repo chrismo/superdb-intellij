@@ -1,7 +1,7 @@
 name: Sync LSP Binary
 
 on:
-  # Trigger when superdb-syntaxes has a new release
+  # Trigger when superdb-lsp has a new release
   repository_dispatch:
     types: [lsp-release]
 
@@ -23,7 +23,7 @@ on:
     - cron: '0 0 * * 0'  # Every Sunday at midnight
 
 env:
-  LSP_REPO: chrismo/superdb-syntaxes
+  LSP_REPO: chrismo/superdb-lsp
 
 jobs:
   sync-lsp:

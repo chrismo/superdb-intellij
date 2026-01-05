@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  LSP_REPO: chrismo/superdb-syntaxes
+  LSP_REPO: chrismo/superdb-lsp
 
 jobs:
   build-release:
