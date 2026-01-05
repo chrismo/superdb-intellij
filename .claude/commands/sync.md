@@ -1,6 +1,8 @@
-# Sync SuperSQL Grammar
+# Sync SuperDB Plugin
 
-Fully automated synchronization of this IntelliJ plugin's grammar with the latest SuperSQL from brimdata/super.
+Fully automated synchronization of this IntelliJ plugin with the latest SuperDB:
+1. **LSP binary** - Downloads latest from chrismo/superdb-lsp
+2. **Grammar** - Syncs keywords, types, functions from brimdata/super
 
 **This command runs end-to-end automatically. No user confirmation required.**
 
@@ -8,9 +10,31 @@ Fully automated synchronization of this IntelliJ plugin's grammar with the lates
 
 Execute ALL steps below in sequence. Do NOT stop for confirmation. Fix any issues encountered automatically.
 
+### Phase 0: Update LSP Binary
+
+Download the latest LSP binary - this determines the plugin version:
+
+```bash
+./scripts/download-all-platforms.sh latest
+```
+
+Extract version info from the LSP binary:
+```bash
+./src/main/resources/lsp/superdb-lsp-darwin-arm64 --version
+```
+
+Expected format: `0.51231.0+abc1234` (semver with brimdata/super commit as build metadata)
+
+- Version before `+` → plugin version for CHANGELOG (e.g., `0.51231.0`)
+- SHA after `+` → brimdata/super commit to sync grammar from (e.g., `abc1234`)
+
+**Fallback:** If version doesn't contain `+`, use brimdata/super `main` branch.
+
 ### Phase 1: Fetch Upstream Sources
 
-Fetch files from brimdata/super main branch using raw GitHub URLs (simpler than gh api + base64 decoding):
+Fetch files from brimdata/super at the **commit SHA embedded in the LSP version**.
+
+Use WebFetch to retrieve these files (already approved, no temp files needed):
 
 | File | Purpose | What to Extract |
 |------|---------|-----------------|
@@ -20,17 +44,12 @@ Fetch files from brimdata/super main branch using raw GitHub URLs (simpler than 
 
 **Note:** Do NOT use `compiler/parser/valid.spq` - it's not reliably maintained and contains stale syntax.
 
-Fetch each file using raw URLs:
-```bash
-curl -sL https://raw.githubusercontent.com/brimdata/super/main/compiler/parser/parser.peg > .claude/upstream-parser.peg
-curl -sL https://raw.githubusercontent.com/brimdata/super/main/runtime/sam/expr/function/function.go > .claude/upstream-function.go
-curl -sL https://raw.githubusercontent.com/brimdata/super/main/runtime/sam/expr/agg/agg.go > .claude/upstream-agg.go
-```
+Use WebFetch with the commit SHA from Phase 0 (or `main` as fallback):
+- `https://raw.githubusercontent.com/brimdata/super/{SHA}/compiler/parser/parser.peg`
+- `https://raw.githubusercontent.com/brimdata/super/{SHA}/runtime/sam/expr/function/function.go`
+- `https://raw.githubusercontent.com/brimdata/super/{SHA}/runtime/sam/expr/agg/agg.go`
 
-Get the latest commit SHA:
-```bash
-curl -sL https://api.github.com/repos/brimdata/super/commits/main | super -f text -c 'cut sha' -
-```
+WebFetch is pre-approved for `raw.githubusercontent.com` - no temp files or user prompts needed.
 
 ### Phase 2: Extract Function Names from Go Files
 
@@ -248,17 +267,17 @@ After completion, provide a summary:
 ```
 ## Sync Complete
 
+### Versions
+- LSP version: X.YMMDD.Z
+- brimdata/super commit: <sha>
+- Plugin version: X.YMMDD.Z
+
 ### Changes Made
 - Added keywords: X, Y, Z
 - Added functions: A, B, C
 - Removed tokens: D, E
 - Updated rules: ...
 - Fixed bugs: ...
-
-### Upstream Sources
-- parser.peg commit: <hash>
-- function.go commit: <hash>
-- agg.go commit: <hash>
 
 ### Test Results
 - All tests passing: Yes/No
