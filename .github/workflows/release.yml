@@ -75,8 +75,11 @@ jobs:
           echo "artifact_name=superdb-plugin-${VERSION}" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
 
-          # Check if this version already has a release
-          if gh release view "$VERSION" >/dev/null 2>&1; then
+          # Check if this version already has a tag or release
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "skip_release=true" >> $GITHUB_OUTPUT
+            echo "Tag $VERSION already exists, skipping"
+          elif gh release view "$VERSION" >/dev/null 2>&1; then
             echo "skip_release=true" >> $GITHUB_OUTPUT
             echo "Release $VERSION already exists, skipping"
           else
