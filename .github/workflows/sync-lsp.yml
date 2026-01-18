@@ -18,9 +18,10 @@ on:
         default: 'true'
         type: boolean
 
-  # Schedule to check for new LSP releases weekly
-  schedule:
-    - cron: '0 0 * * 0'  # Every Sunday at midnight
+  # Disabled: was failing due to missing LSP_REPO_TOKEN secret
+  # Re-enable when ready to automate LSP sync
+  # schedule:
+  #   - cron: '0 0 * * 0'  # Every Sunday at midnight
 
 env:
   LSP_REPO: chrismo/superdb-lsp
