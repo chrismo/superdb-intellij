@@ -41,7 +41,9 @@
       "Bash(find:*)",
       "Bash(git log:*)",
       "Bash(super -f text -)",
-      "Bash(super:*)"
+      "Bash(super:*)",
+      "Bash(git count-objects:*)",
+      "Bash(git config:*)"
     ]
   },
   "hooks": {
