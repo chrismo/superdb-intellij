@@ -1,6 +1,13 @@
 #!/bin/bash
 # Setup Gradle proxy configuration for environments with authenticated HTTP proxies.
 #
+# Skip in Claude Code web environments - proxy config should be done via
+# environment settings in the web UI, not via hooks.
+if [ "$CLAUDE_CODE_REMOTE" = "true" ]; then
+    echo "Skipping Gradle proxy setup in web environment"
+    exit 0
+fi
+#
 # This script:
 # 1. Starts the auth proxy (if not already running)
 # 2. Configures Gradle to use it via ~/.gradle/gradle.properties
