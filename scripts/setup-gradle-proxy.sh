@@ -26,6 +26,10 @@ if [[ "$PROXY_URL" != *"@"* ]]; then
     return 0 2>/dev/null || exit 0
 fi
 
+# Check for required tools - exit gracefully if missing
+command -v nc >/dev/null 2>&1 || { echo "nc not found - skipping proxy setup"; return 0 2>/dev/null || exit 0; }
+command -v python3 >/dev/null 2>&1 || { echo "python3 not found - skipping proxy setup"; return 0 2>/dev/null || exit 0; }
+
 echo "Setting up Gradle proxy authentication..."
 
 # Check if proxy is already running
