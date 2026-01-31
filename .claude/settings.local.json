@@ -45,19 +45,5 @@
       "Bash(git count-objects:*)",
       "Bash(git config:*)"
     ]
-  },
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ./scripts/setup-gradle-proxy.sh",
-            "timeout": 30,
-            "statusMessage": "Setting up Gradle proxy..."
-          }
-        ]
-      }
-    ]
   }
 }
